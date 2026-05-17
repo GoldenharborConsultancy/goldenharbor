@@ -24,21 +24,20 @@ document.querySelectorAll('.faq-question').forEach(btn => {
   });
 });
 
-// ─── Form Submission ───
+// ─── Form Submission — WhatsApp ───
 const form = document.getElementById('consultForm');
+const WHATSAPP_NUMBER = '601139487938';
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
 
-  const inputs = form.querySelectorAll('input, select');
+  const fields = form.querySelectorAll('input, select');
   let valid = true;
-  inputs.forEach(inp => {
-    if (!inp.value.trim()) valid = false;
-  });
+  fields.forEach(f => { if (!f.value.trim()) valid = false; });
 
-  const phone = form.querySelector('input[type="tel"]').value.trim();
-  if (phone && !/^01[0-9]-?\s?[0-9]{3,4}\s?[0-9]{4,5}$/.test(phone)) {
-    showToast('Please enter a valid Malaysian phone number (e.g. 012-345 6789)', true);
+  const phoneInput = form.querySelector('input[type="tel"]').value.trim();
+  if (phoneInput && !/^01[0-9]-?\s?[0-9]{3,4}\s?[0-9]{4,5}$/.test(phoneInput)) {
+    showToast('Please enter a valid Malaysian phone number', true);
     return;
   }
 
@@ -47,7 +46,37 @@ form.addEventListener('submit', (e) => {
     return;
   }
 
-  showToast('Thank you! I will contact you within 24 hours.');
+  // Gather form values
+  const val = {};
+  const inputs = form.querySelectorAll('input, select, textarea');
+  inputs.forEach(f => {
+    const placeholder = f.placeholder || '';
+    if (placeholder.includes('Name')) val.name = f.value.trim();
+    else if (placeholder.includes('Phone')) val.phone = f.value.trim();
+    else if (placeholder.includes('Loan Amount')) val.amount = f.value.trim();
+    else if (placeholder.includes('Monthly Income')) val.income = f.value.trim();
+    else if (placeholder.includes('past rejections') || placeholder.includes('Any past')) val.notes = f.value.trim();
+  });
+
+  // Select values by index
+  const selects = form.querySelectorAll('select');
+  val.purpose = selects[0] ? selects[0].value : '';
+  val.employment = selects[1] ? selects[1].value : '';
+
+  // Build WhatsApp message
+  let msg = `Hi Marcus, I'd like a free consultation.`;
+  if (val.name) msg += `\n\nName: ${val.name}`;
+  if (val.phone) msg += `\nPhone: ${val.phone}`;
+  if (val.amount) msg += `\nLoan Amount: RM ${val.amount}`;
+  if (val.purpose) msg += `\nPurpose: ${val.purpose}`;
+  if (val.income) msg += `\nMonthly Income: RM ${val.income}`;
+  if (val.employment) msg += `\nEmployment: ${val.employment}`;
+  if (val.notes) msg += `\nNotes: ${val.notes}`;
+
+  const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+  window.open(waUrl, '_blank');
+
+  showToast('Opening WhatsApp... Reply there and we\'ll help you right away.');
   form.reset();
 });
 
