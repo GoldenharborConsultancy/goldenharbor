@@ -434,3 +434,33 @@ body {
 .toast.error {
   background: #dc2626;
 }
+
+/* ─── Video Section ─── */
+.video-section {
+  background: #1a1a2e;
+  color: #fff;
+}
+.video-section .section-title {
+  color: #fff;
+}
+.video-section .section-sub {
+  color: #cbd5e1;
+}
+.video-wrapper {
+  max-width: 800px;
+  margin: 32px auto 0;
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
