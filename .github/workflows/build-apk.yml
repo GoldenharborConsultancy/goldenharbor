@@ -32,6 +32,8 @@ jobs:
         run: |
           mkdir -p www
           cp app.html app.js manifest.json sw.js icon-192.png icon-512.png www/
+          # Capacitor requires index.html as entry point -> redirect to app.html
+          echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0;url=app.html"></head><body></body></html>' > www/index.html
 
       - name: Sync Capacitor
         run: npx cap sync android
