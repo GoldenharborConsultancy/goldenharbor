@@ -18,44 +18,8 @@
       -webkit-tap-highlight-color:transparent;
       display:flex; justify-content:center;
     }
-    .app-container {
-      width:100%; max-width:480px;
-      background:#0f172a;
-    }
+    .app-container { width:100%; max-width:480px; background:#0f172a; }
     .hidden { display:none !important; }
-
-    /* Onboarding */
-    .onboard {
-      display:flex; flex-direction:column; min-height:100vh; min-height:100dvh;
-      padding:40px 24px 24px;
-    }
-    .onboard .logo { font-size:22px; font-weight:800; color:#e2b54b; text-align:center; margin-bottom:8px; }
-    .onboard .logo span { color:#94a3b8; }
-    .onboard .subtitle { text-align:center; color:#94a3b8; font-size:13px; margin-bottom:32px; }
-    .onboard .step-dots { display:flex; gap:8px; justify-content:center; margin-bottom:28px; }
-    .onboard .dot { width:8px; height:8px; border-radius:50%; background:#334155; transition:0.3s; }
-    .onboard .dot.active { background:#e2b54b; width:24px; border-radius:4px; }
-    .onboard .dot.done { background:#22c55e; }
-    .onboard .screen { display:none; flex:1; flex-direction:column; }
-    .onboard .screen.active { display:flex; }
-    .onboard h2 { font-size:24px; font-weight:700; margin-bottom:8px; }
-    .onboard p.desc { color:#94a3b8; font-size:14px; margin-bottom:24px; line-height:1.6; }
-    .onboard input {
-      width:100%; padding:16px; background:#1e293b; border:1px solid #334155;
-      border-radius:12px; color:#e2e8f0; font-size:16px; font-family:'Inter',sans-serif;
-      margin-bottom:16px; outline:none;
-    }
-    .onboard input:focus { border-color:#e2b54b; }
-    .onboard input::placeholder { color:#64748b; }
-    .onboard .btn {
-      width:100%; padding:16px; background:linear-gradient(135deg,#e2b54b,#c9952e);
-      color:#0f172a; border:none; border-radius:12px; font-size:16px; font-weight:700;
-      cursor:pointer; font-family:'Inter',sans-serif; margin-top:auto;
-    }
-    .onboard .btn:active { opacity:0.85; }
-    .onboard .skip { text-align:center; color:#64748b; font-size:13px; margin-top:12px; cursor:pointer; }
-
-    /* Dashboard */
     .app-shell { display:none; flex-direction:column; min-height:100vh; min-height:100dvh; }
     .app-shell.active { display:flex; }
     .topbar {
@@ -70,7 +34,8 @@
       display:flex; align-items:center; justify-content:center;
       font-weight:800; color:#0f172a; font-size:16px;
     }
-
+    .page { display:none; padding:20px; flex:1; }
+    .page.active { display:block; }
     .dashboard { padding:20px; flex:1; }
     .dash-card {
       background:#1e293b; border-radius:16px; padding:20px; margin-bottom:16px;
@@ -78,32 +43,37 @@
     }
     .dash-card h3 { font-size:16px; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
     .dash-card p { color:#94a3b8; font-size:13px; line-height:1.6; }
-    .dash-card .status { display:inline-block; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; margin-top:8px; }
-    .dash-card .status.pending { background:#334155; color:#94a3b8; }
-    .dash-card .status.review { background:#1e3a5f; color:#60a5fa; }
-    .dash-card .status.approved { background:#14532d; color:#22c55e; }
-    .dash-card .action {
+    .status { display:inline-block; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; margin-top:8px; }
+    .status.pending { background:#334155; color:#94a3b8; }
+    .status.review { background:#1e3a5f; color:#60a5fa; }
+    .status.approved { background:#14532d; color:#22c55e; }
+    .action {
       display:inline-block; margin-top:12px; padding:10px 20px; background:#e2b54b;
-      color:#0f172a; border-radius:8px; font-weight:600; font-size:13px; text-decoration:none;
+      color:#0f172a; border-radius:8px; font-weight:600; font-size:13px; text-decoration:none; cursor:pointer; border:none;
     }
-
-    /* Bottom nav */
     .bottom-nav {
       display:flex; background:#1e293b; border-top:1px solid #334155;
       padding:8px 0; position:sticky; bottom:0;
     }
     .bottom-nav .nav-item {
       flex:1; display:flex; flex-direction:column; align-items:center;
-      padding:8px; color:#64748b; font-size:11px; cursor:pointer; gap:4px;
-      text-decoration:none;
+      padding:8px; color:#64748b; font-size:11px; cursor:pointer; gap:4px; text-decoration:none;
     }
     .bottom-nav .nav-item.active { color:#e2b54b; }
     .bottom-nav .nav-item .icon { font-size:22px; }
-
-    /* Pages */
-    .page { display:none; padding:20px; flex:1; }
-    .page.active { display:block; }
-
+    .form-group { margin-bottom:16px; }
+    .form-group label { display:block; font-size:12px; font-weight:600; color:#94a3b8; margin-bottom:4px; text-transform:uppercase; }
+    .form-group input, .form-group select, .form-group textarea {
+      width:100%; padding:14px; background:#1e293b; border:1px solid #334155;
+      border-radius:10px; color:#e2e8f0; font-size:15px; font-family:'Inter',sans-serif; outline:none;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:#e2b54b; }
+    .form-group select { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; }
+    .btn-primary {
+      width:100%; padding:16px; background:linear-gradient(135deg,#e2b54b,#c9952e); color:#0f172a;
+      border:none; border-radius:12px; font-size:16px; font-weight:700; cursor:pointer; font-family:'Inter',sans-serif;
+    }
+    .btn-primary:disabled { opacity:0.5; }
     .doc-item {
       display:flex; align-items:center; gap:12px; padding:16px;
       background:#1e293b; border:1px solid #334155; border-radius:12px; margin-bottom:12px;
@@ -112,92 +82,98 @@
     .doc-item .doc-info { flex:1; }
     .doc-item .doc-info strong { display:block; font-size:14px; }
     .doc-item .doc-info span { font-size:12px; color:#94a3b8; }
-    .doc-item .doc-status { font-size:12px; padding:4px 10px; border-radius:20px; }
-    .doc-item .doc-status.missing { background:#7f1d1d; color:#fca5a5; }
-    .doc-item .doc-status.ready { background:#14532d; color:#22c55e; }
-
-    .contact-btn {
-      display:block; text-align:center; padding:14px; background:#25d366;
-      color:#fff; border-radius:12px; font-weight:600; margin-top:16px; text-decoration:none;
+    .doc-status { font-size:12px; padding:4px 10px; border-radius:20px; }
+    .doc-status.missing { background:#7f1d1d; color:#fca5a5; }
+    .toast {
+      position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:#22c55e;
+      color:#fff; padding:12px 24px; border-radius:12px; font-weight:600; z-index:999;
+      display:none;
     }
+    .toast.error { background:#dc2626; }
+    .toast.show { display:block; animation:fadeIn 0.3s; }
+    @keyframes fadeIn { from{opacity:0;transform:translateX(-50%) translateY(10px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
   </style>
 </head>
 <body>
 <div class="app-container">
-
-<!-- ONBOARDING -->
-<div class="onboard" id="onboard">
-  <div class="logo">Golden <span>Harbor</span></div>
-  <div class="subtitle">Loan Application Assistant</div>
-  <div class="step-dots" id="dots">
-    <div class="dot active"></div><div class="dot"></div><div class="dot"></div>
-  </div>
-
-  <!-- Step 1 -->
-  <div class="screen active" id="step1">
-    <h2>Welcome! 👋</h2>
-    <p class="desc">Let's get started. What's your name?</p>
-    <input type="text" id="onName" placeholder="Your full name" />
-    <button class="btn" onclick="nextStep(1)">Continue</button>
-  </div>
-
-  <!-- Step 2 -->
-  <div class="screen" id="step2">
-    <h2>Nice to meet you! 📱</h2>
-    <p class="desc">Your phone number so we can reach you.</p>
-    <input type="tel" id="onPhone" placeholder="e.g. 014 6326569" />
-    <button class="btn" onclick="nextStep(2)">Continue</button>
-    <div class="skip" onclick="nextStep(2)">Skip for now</div>
-  </div>
-
-  <!-- Step 3 -->
-  <div class="screen" id="step3">
-    <h2>Almost there 📧</h2>
-    <p class="desc">Email for updates on your application.</p>
-    <input type="email" id="onEmail" placeholder="you@example.com" />
-    <button class="btn" onclick="finishOnboard()">Get Started</button>
-    <div class="skip" onclick="finishOnboard()">Skip</div>
-  </div>
-</div>
-
-<!-- APP SHELL -->
-<div class="app-shell" id="appShell">
+<div class="app-shell active" id="appShell">
   <div class="topbar">
-    <div class="user-greeting">Hi, <span id="userName">User</span></div>
-    <div class="avatar" id="userAvatar">U</div>
+    <div class="user-greeting">Golden <span>Harbor</span></div>
+    <div class="avatar" id="userAvatar">G</div>
   </div>
 
   <!-- Dashboard -->
   <div class="page active" id="page-dashboard">
     <div class="dashboard">
       <div class="dash-card">
-        <h3>📋 Your Loan Application</h3>
-        <p>Submit your documents and we'll help you get approved.</p>
-        <span class="status pending" id="loanStatus">Pending Documents</span><br>
-        <a href="#" class="action" onclick="switchPage('docs')">Upload Documents →</a>
+        <h3>📋 Submit Loan Application</h3>
+        <p>Fill in your details and we'll get back to you.</p>
+        <button class="action" onclick="switchPage('apply')">Apply Now →</button>
       </div>
       <div class="dash-card">
-        <h3>📊 Application Progress</h3>
-        <p id="progressMsg">Complete your profile to track progress.</p>
+        <h3>📄 Required Documents</h3>
+        <p>Prepare these documents for faster processing.</p>
+        <button class="action" onclick="switchPage('docs')">View Checklist →</button>
       </div>
       <div class="dash-card">
-        <h3>💡 Need Help?</h3>
-        <p>Contact us on WhatsApp for a free consultation.</p>
-        <a href="https://wa.me/60146326569?text=Hi%20Golden%20Harbor%2C%20I%20need%20help%20with%20my%20loan%20application" class="action">Chat on WhatsApp →</a>
+        <h3>📞 Contact Us</h3>
+        <p>WhatsApp or call us directly.</p>
+        <a href="https://wa.me/60146326569" class="action">Chat on WhatsApp →</a>
       </div>
     </div>
+  </div>
+
+  <!-- Apply Form -->
+  <div class="page" id="page-apply">
+    <h2 style="margin-bottom:16px;">📋 Loan Application</h2>
+    <form id="applyForm">
+      <div class="form-group">
+        <label>Full Name *</label>
+        <input type="text" id="aName" placeholder="Your full name as per IC" required />
+      </div>
+      <div class="form-group">
+        <label>Phone Number *</label>
+        <input type="tel" id="aPhone" placeholder="e.g. 014 6326569" required />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="aEmail" placeholder="you@example.com" />
+      </div>
+      <div class="form-group">
+        <label>Loan Type *</label>
+        <select id="aLoanType" required>
+          <option value="">Select loan type</option>
+          <option value="Personal Loan">Personal Loan</option>
+          <option value="SME Business Loan">SME / Business Loan</option>
+          <option value="Home Loan">Home / Property Loan</option>
+          <option value="Car Loan">Car / Vehicle Loan</option>
+          <option value="Debt Consolidation">Debt Consolidation</option>
+          <option value="Other">Other / Not Sure</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Loan Amount Needed (RM)</label>
+        <input type="number" id="aAmount" placeholder="e.g. 50000" min="1000" />
+      </div>
+      <div class="form-group">
+        <label>Additional Notes</label>
+        <textarea id="aNotes" rows="3" placeholder="Any details you'd like us to know..."></textarea>
+      </div>
+      <button type="submit" class="btn-primary" id="submitBtn">Submit Application</button>
+      <p style="text-align:center;color:#64748b;font-size:12px;margin-top:8px;">We'll contact you within 24 hours</p>
+    </form>
   </div>
 
   <!-- Documents -->
   <div class="page" id="page-docs">
     <h2 style="margin-bottom:16px;">📄 Required Documents</h2>
-    <div class="doc-item"><div class="doc-icon">🪪</div><div class="doc-info"><strong>IC (Identity Card)</strong><span>Front & back copy</span></div><span class="doc-status missing" id="doc-ic">Missing</span></div>
-    <div class="doc-item"><div class="doc-icon">💰</div><div class="doc-info"><strong>Payslip (3 months)</strong><span>Latest 3 months</span></div><span class="doc-status missing" id="doc-pay">Missing</span></div>
-    <div class="doc-item"><div class="doc-icon">🏦</div><div class="doc-info"><strong>Bank Statement (6 months)</strong><span>Latest 6 months</span></div><span class="doc-status missing" id="doc-bank">Missing</span></div>
-    <div class="doc-item"><div class="doc-icon">📊</div><div class="doc-info"><strong>EPF Statement</strong><span>Latest statement</span></div><span class="doc-status missing" id="doc-epf">Missing</span></div>
-    <div class="doc-item"><div class="doc-icon">📝</div><div class="doc-info"><strong>CTOS / CCRIS Report</strong><span>Credit report</span></div><span class="doc-status missing" id="doc-ctos">Missing</span></div>
-    <p style="color:#94a3b8;font-size:12px;margin-top:12px;">📱 WhatsApp the documents to us for faster processing</p>
-    <a href="https://wa.me/60146326569?text=Hi%2C%20I%20want%20to%20submit%20my%20loan%20documents" class="contact-btn">📱 Send Documents via WhatsApp</a>
+    <div class="doc-item"><div class="doc-icon">🪪</div><div class="doc-info"><strong>IC (Identity Card)</strong><span>Front & back copy</span></div><span class="doc-status missing">Upload</span></div>
+    <div class="doc-item"><div class="doc-icon">💰</div><div class="doc-info"><strong>Payslip (3 months)</strong><span>Latest 3 months</span></div><span class="doc-status missing">Upload</span></div>
+    <div class="doc-item"><div class="doc-icon">🏦</div><div class="doc-info"><strong>Bank Statement (6 months)</strong><span>Latest 6 months</span></div><span class="doc-status missing">Upload</span></div>
+    <div class="doc-item"><div class="doc-icon">📊</div><div class="doc-info"><strong>EPF Statement</strong><span>Latest statement</span></div><span class="doc-status missing">Upload</span></div>
+    <div class="doc-item"><div class="doc-icon">📝</div><div class="doc-info"><strong>CTOS / CCRIS Report</strong><span>Credit report</span></div><span class="doc-status missing">Upload</span></div>
+    <p style="color:#94a3b8;font-size:12px;margin-top:12px;">Submit via WhatsApp after applying</p>
+    <a href="https://wa.me/60146326569" class="action" style="display:block;text-align:center;">📱 Send Documents →</a>
   </div>
 
   <!-- Contact -->
@@ -218,85 +194,29 @@
     </div>
   </div>
 
-  <!-- Profile -->
-  <div class="page" id="page-profile">
-    <h2 style="margin-bottom:16px;">👤 My Profile</h2>
-    <div class="dash-card">
-      <p><strong>Name:</strong> <span id="profName">-</span></p>
-      <p><strong>Phone:</strong> <span id="profPhone">-</span></p>
-      <p><strong>Email:</strong> <span id="profEmail">-</span></p>
-    </div>
-    <div class="dash-card">
-      <h3>🔁 Reset App</h3>
-      <p>Clear all data and start over.</p>
-      <button class="btn" style="margin-top:12px;background:#dc2626;color:#fff;" onclick="resetApp()">Reset App</button>
-    </div>
-  </div>
-
   <!-- Bottom Nav -->
   <div class="bottom-nav">
     <div class="nav-item active" onclick="switchPage('dashboard')">
       <span class="icon">🏠</span>Home
     </div>
+    <div class="nav-item" onclick="switchPage('apply')">
+      <span class="icon">📝</span>Apply
+    </div>
     <div class="nav-item" onclick="switchPage('docs')">
-      <span class="icon">📄</span>Documents
+      <span class="icon">📄</span>Docs
     </div>
     <div class="nav-item" onclick="switchPage('contact')">
       <span class="icon">📞</span>Contact
     </div>
-    <div class="nav-item" onclick="switchPage('profile')">
-      <span class="icon">👤</span>Profile
-    </div>
   </div>
 </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
-
-  const WHATSAPP = '60146326569';
-
-  // Onboarding
-  function nextStep(step) {
-    document.getElementById('step'+step).classList.remove('active');
-    document.getElementById('step'+(step+1)).classList.add('active');
-    document.querySelectorAll('#dots .dot')[step-1].classList.add('done');
-    document.querySelectorAll('#dots .dot')[step-1].classList.remove('active');
-    document.querySelectorAll('#dots .dot')[step].classList.add('active');
-  }
-
-  function finishOnboard() {
-    const name = document.getElementById('onName').value.trim() || 'User';
-    const phone = document.getElementById('onPhone').value.trim() || '-';
-    const email = document.getElementById('onEmail').value.trim() || '-';
-
-    localStorage.setItem('gh_name', name);
-    localStorage.setItem('gh_phone', phone);
-    localStorage.setItem('gh_email', email);
-    localStorage.setItem('gh_onboarded', '1');
-
-    loadDashboard();
-  }
-
-  function loadDashboard() {
-    document.getElementById('onboard').classList.add('hidden');
-    document.getElementById('appShell').classList.add('active');
-
-    const name = localStorage.getItem('gh_name') || 'User';
-    document.getElementById('userName').textContent = name;
-    document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
-    document.getElementById('profName').textContent = name;
-    document.getElementById('profPhone').textContent = localStorage.getItem('gh_phone') || '-';
-    document.getElementById('profEmail').textContent = localStorage.getItem('gh_email') || '-';
-
-    // Update progress
-    const phoneOk = localStorage.getItem('gh_phone') && localStorage.getItem('gh_phone') !== '-';
-    const emailOk = localStorage.getItem('gh_email') && localStorage.getItem('gh_email') !== '-';
-    if (phoneOk && emailOk) {
-      document.getElementById('progressMsg').textContent = '✅ Profile complete. Ready to submit documents!';
-      document.getElementById('loanStatus').textContent = 'Ready for Documents';
-      document.getElementById('loanStatus').className = 'status review';
-    }
-  }
+  const API = 'https://bridgeloan.pythonanywhere.com/api/gh-submit';
 
   function switchPage(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -305,16 +225,55 @@
     event.target.closest('.nav-item').classList.add('active');
   }
 
-  function resetApp() {
-    localStorage.clear();
-    location.reload();
+  function showToast(msg, isError) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + (isError ? 'error' : '') + ' show';
+    setTimeout(() => t.classList.remove('show'), 3000);
   }
 
-  // Load if already onboarded
-  if (localStorage.getItem('gh_onboarded') === '1') {
-    loadDashboard();
-  }
+  document.getElementById('applyForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+
+    const data = {
+      name: document.getElementById('aName').value.trim(),
+      phone: document.getElementById('aPhone').value.trim(),
+      email: document.getElementById('aEmail').value.trim(),
+      loan_type: document.getElementById('aLoanType').value,
+      loan_amount: document.getElementById('aAmount').value || '',
+      notes: document.getElementById('aNotes').value.trim()
+    };
+
+    try {
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      if (result.success) {
+        showToast('✅ Application submitted!', false);
+        this.reset();
+        switchPage('dashboard');
+      } else {
+        showToast('❌ ' + (result.message || 'Failed'), true);
+      }
+    } catch(err) {
+      showToast('❌ Network error. Try again.', true);
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Submit Application';
+  });
+
+  // Load user data
+  const saved = JSON.parse(localStorage.getItem('gh_user') || '{}');
+  if (saved.name) document.getElementById('aName').value = saved.name;
+  if (saved.phone) document.getElementById('aPhone').value = saved.phone;
+  if (saved.email) document.getElementById('aEmail').value = saved.email;
 </script>
-</div>
 </body>
 </html>
