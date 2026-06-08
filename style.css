@@ -74,6 +74,13 @@ body {
   transition: color 0.2s;
 }
 .nav-links a:hover { color: #059669; }
+.nav-cta {
+  background: #e2b54b !important;
+  color: #0f172a !important;
+  padding: 8px 16px !important;
+  border-radius: 8px;
+  font-weight: 700;
+}
 .hamburger {
   display: none;
   background: none;
