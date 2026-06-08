@@ -1,35 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://goldenharbor.my/</loc>
-    <lastmod>2026-05-17</lastmod>
+    <loc>https://goldenharborconsultancy.github.io/goldenharbor/</loc>
+    <lastmod>2026-06-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://goldenharbor.my/check-ctos-score.html</loc>
-    <lastmod>2026-05-17</lastmod>
+    <loc>https://goldenharborconsultancy.github.io/goldenharbor/app.html</loc>
+    <lastmod>2026-06-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://goldenharborconsultancy.github.io/goldenharbor/check-ctos-score.html</loc>
+    <lastmod>2026-06-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://goldenharbor.my/loan-rejected-ccris.html</loc>
-    <lastmod>2026-05-17</lastmod>
+    <loc>https://goldenharborconsultancy.github.io/goldenharbor/loan-rejected-ccris.html</loc>
+    <lastmod>2026-06-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://goldenharbor.my/loan-documents-checklist.html</loc>
-    <lastmod>2026-05-17</lastmod>
+    <loc>https://goldenharborconsultancy.github.io/goldenharbor/loan-documents-checklist.html</loc>
+    <lastmod>2026-06-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://goldenharbor.my/self-employed-loan.html</loc>
-    <lastmod>2026-05-17</lastmod>
+    <loc>https://goldenharborconsultancy.github.io/goldenharbor/self-employed-loan.html</loc>
+    <lastmod>2026-06-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://goldenharborconsultancy.github.io/goldenharbor/home-loan-documents.html</loc>
+    <lastmod>2026-06-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://goldenharborconsultancy.github.io/goldenharbor/loan-tracker.html</loc>
+    <lastmod>2026-06-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 </urlset>
-
-
