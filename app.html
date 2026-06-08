@@ -121,6 +121,10 @@
     .nav-item.active{color:#e2b54b}
     .nav-item .nav-icon{font-size:19px}
 
+    /* Back navigation */
+    .back-bar{display:flex;align-items:center;grid-gap:10px;gap:10px;margin-bottom:16px}
+    .back-btn{background:none;border:none;color:#e2b54b;font-size:22px;cursor:pointer;padding:0 4px;line-height:1}
+
     /* Toast */
     .toast{
       position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#22c55e;
@@ -238,8 +242,9 @@
 
   <!-- Tab 2: Documents -->
   <div class="page" id="page-docs">
-    <div class="checklist-header">
-      <h2 style="font-size:18px">Your Documents</h2>
+    <div class="back-bar">
+      <button class="back-btn" onclick="switchTab('diagnostic')">←</button>
+      <h2 style="font-size:18px;margin:0">Your Documents</h2>
       <span class="progress-badge" id="progressBadge">0/6 ready</span>
     </div>
     <p style="font-size:12px;color:#94a3b8;margin-bottom:16px">Tick each document as you prepare it. We'll guide you through the rest.</p>
@@ -259,7 +264,10 @@
 
   <!-- Tab 3: Contact -->
   <div class="page" id="page-contact">
-    <h2 style="font-size:18px;margin-bottom:14px">Get Free Consultation</h2>
+    <div class="back-bar">
+      <button class="back-btn" onclick="switchTab('diagnostic')">←</button>
+      <h2 style="font-size:18px;margin:0">Get Free Consultation</h2>
+    </div>
     <p style="font-size:13px;color:#94a3b8;margin-bottom:16px">Tell us about your situation. We'll call you within 24 hours to review your case.</p>
 
     <form id="leadForm">
