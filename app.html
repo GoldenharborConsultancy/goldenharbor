@@ -16,6 +16,11 @@
       color:#e2e8f0;
       min-height:100vh; min-height:100dvh;
       -webkit-tap-highlight-color:transparent;
+      display:flex; justify-content:center;
+    }
+    .app-container {
+      width:100%; max-width:480px;
+      background:#0f172a;
     }
     .hidden { display:none !important; }
 
@@ -118,6 +123,7 @@
   </style>
 </head>
 <body>
+<div class="app-container">
 
 <!-- ONBOARDING -->
 <div class="onboard" id="onboard">
@@ -309,5 +315,6 @@
     loadDashboard();
   }
 </script>
+</div>
 </body>
 </html>
