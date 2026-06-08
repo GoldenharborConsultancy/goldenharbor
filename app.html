@@ -12,48 +12,76 @@
     *{margin:0;padding:0;box-sizing:border-box}
     body{
       font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;
-      min-height:100vh;min-height:100dvh;
-      display:flex;justify-content:center;
+      min-height:100vh;min-height:100dvh;display:flex;justify-content:center;
       -webkit-tap-highlight-color:transparent;
     }
     .app{width:100%;max-width:480px;display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
     .topbar{
-      padding:16px 20px;display:flex;align-items:center;gap:12px;
+      padding:16px 20px;display:flex;align-items:center;grid-gap:12px;gap:12px;
       border-bottom:1px solid #1e293b;
     }
-    .topbar .logo{font-weight:800;font-size:18px;color:#e2b54b}
-    .topbar .logo span{color:#e2e8f0;font-weight:500;font-size:13px;margin-left:6px}
+    .topbar .logo{font-weight:800;color:#e2b54b;font-size:16px}
+    .topbar .logo span{color:#94a3b8;font-weight:400;font-size:12px;margin-left:6px}
     .page{display:none;flex:1;padding:20px;overflow-y:auto}
     .page.active{display:block}
 
-    /* Onboarding */
-    .onboarding{text-align:center;padding-top:40px}
-    .onboarding .icon{font-size:56px;margin-bottom:16px}
-    .onboarding h1{font-size:22px;font-weight:800;margin-bottom:8px}
-    .onboarding h1 span{color:#e2b54b}
-    .onboarding p{color:#94a3b8;font-size:14px;line-height:1.6;margin-bottom:24px}
-
-    /* Cards */
-    .card{
-      background:#1e293b;border-radius:16px;padding:20px;margin-bottom:16px;
-      border:1px solid #334155;
+    /* Reason cards */
+    .reason-card{
+      background:#1e293b;border:1px solid #334155;border-radius:14px;padding:16px;
+      margin-bottom:12px;cursor:pointer;transition:all .2s;
     }
-    .card h3{font-size:15px;margin-bottom:6px}
-    .card p{color:#94a3b8;font-size:13px;line-height:1.5}
+    .reason-card:hover{border-color:#475569}
+    .reason-card .head{display:flex;align-items:center;grid-gap:12px;gap:12px}
+    .reason-card .icon{font-size:30px;flex-shrink:0}
+    .reason-card .title{font-weight:700;font-size:15px}
+    .reason-card .subtitle{font-size:12px;color:#94a3b8;margin-top:2px}
+    .reason-card .expand{display:none;margin-top:14px;padding-top:14px;border-top:1px solid #334155}
+    .reason-card.open .expand{display:block}
+    .reason-card .expand h4{font-size:13px;color:#e2b54b;margin-bottom:4px}
+    .reason-card .expand p{font-size:13px;color:#cbd5e1;line-height:1.6;margin-bottom:10px}
+    .reason-card .expand .docs-needed{font-size:12px;color:#64748b}
+    .reason-card .expand .docs-needed strong{color:#94a3b8}
+    .reason-card .chevron{color:#64748b;font-size:18px;transition:transform .2s;flex-shrink:0}
+    .reason-card.open .chevron{transform:rotate(180deg)}
 
-    /* Buttons */
-    .btn{
-      display:inline-block;padding:14px 28px;border-radius:12px;font-weight:700;font-size:15px;
-      text-decoration:none;cursor:pointer;border:none;font-family:'Inter',sans-serif;text-align:center;
+    /* Progress */
+    .progress-row{display:flex;align-items:center;grid-gap:8px;gap:8px;margin-bottom:16px}
+    .progress-dot{width:8px;height:8px;border-radius:50%;background:#334155;transition:background .3s}
+    .progress-dot.done{background:#e2b54b}
+    .progress-label{font-size:12px;color:#64748b}
+
+    /* Checklist */
+    .checklist-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .progress-badge{font-size:12px;font-weight:600;padding:4px 10px;border-radius:20px;background:#1e3a5f;color:#60a5fa}
+    .section-label{font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px}
+    .check-item{
+      display:flex;align-items:center;grid-gap:12px;gap:12px;padding:14px;
+      background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:8px;
+      cursor:pointer;transition:all .2s;
     }
-    .btn-gold{background:linear-gradient(135deg,#e2b54b,#c9952e);color:#0f172a}
-    .btn-gold:disabled{opacity:.5}
-    .btn-outline{background:transparent;color:#e2b54b;border:1px solid #334155}
-    .btn-full{width:100%;padding:16px}
+    .check-item.checked{opacity:.5}
+    .check-item.checked .check-text{text-decoration:line-through}
+    .checkbox{
+      width:20px;height:20px;border-radius:5px;border:2px solid #475569;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;transition:all .2s;
+    }
+    .check-item.checked .checkbox{background:#22c55e;border-color:#22c55e}
+    .checkmark{color:#0f172a;font-weight:800;font-size:12px;opacity:0}
+    .check-item.checked .checkmark{opacity:1}
+    .check-text{flex:1;font-size:13px}
+    .check-why{font-size:11px;color:#64748b;margin-top:2px}
+
+    /* CTA */
+    .cta-card{
+      background:linear-gradient(135deg,#1e293b,#1a2744);border:1px solid #334155;
+      border-radius:14px;padding:20px;text-align:center;margin-top:20px;
+    }
+    .cta-card h3{font-size:16px;margin-bottom:6px}
+    .cta-card p{font-size:13px;color:#94a3b8;margin-bottom:16px}
 
     /* Form */
-    .form-group{margin-bottom:14px}
-    .form-group label{display:block;font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:4px;text-transform:uppercase}
+    .form-group{margin-bottom:12px}
+    .form-group label{display:block;font-size:11px;font-weight:600;color:#64748b;margin-bottom:3px;text-transform:uppercase}
     .form-group input,.form-group select,.form-group textarea{
       width:100%;padding:14px;background:#1e293b;border:1px solid #334155;
       border-radius:10px;color:#e2e8f0;font-size:15px;font-family:'Inter',sans-serif;outline:none;
@@ -65,42 +93,33 @@
       background-repeat:no-repeat;background-position:right 14px center;
     }
 
-    /* Checklist */
-    .checklist-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-    .checklist-header h2{font-size:20px}
-    .progress-badge{
-      font-size:12px;font-weight:600;padding:4px 10px;border-radius:20px;
-      background:#1e3a5f;color:#60a5fa;
+    /* Buttons */
+    .btn{
+      display:inline-block;padding:14px 28px;border-radius:12px;font-weight:700;font-size:14px;
+      text-decoration:none;cursor:pointer;border:none;font-family:'Inter',sans-serif;text-align:center;
     }
-    .check-item{
-      display:flex;align-items:center;gap:14px;padding:14px 16px;
-      background:#1e293b;border:1px solid #334155;border-radius:12px;margin-bottom:10px;
-      cursor:pointer;transition:all .2s;
+    .btn-gold{background:linear-gradient(135deg,#e2b54b,#c9952e);color:#0f172a}
+    .btn-gold:disabled{opacity:.5}
+    .btn-outline{background:transparent;color:#e2b54b;border:1px solid #334155}
+    .btn-full{width:100%;padding:15px}
+
+    /* Contact cards */
+    .contact-card{
+      background:#1e293b;border:1px solid #334155;border-radius:14px;padding:16px;margin-bottom:12px;
     }
-    .check-item.checked{opacity:.5}
-    .check-item.checked .check-text{text-decoration:line-through}
-    .checkbox{
-      width:22px;height:22px;border-radius:6px;border:2px solid #475569;
-      display:flex;align-items:center;justify-content:center;
-      flex-shrink:0;transition:all .2s;
-    }
-    .check-item.checked .checkbox{background:#22c55e;border-color:#22c55e}
-    .check-icon{color:#0f172a;font-weight:800;font-size:13px;opacity:0;transition:opacity .2s}
-    .check-item.checked .check-icon{opacity:1}
-    .check-text{flex:1;font-size:14px}
-    .check-detail{font-size:12px;color:#64748b;margin-top:2px}
+    .contact-card h4{font-size:14px;margin-bottom:4px}
+    .contact-card p{font-size:13px;color:#94a3b8}
 
     /* Bottom nav */
     .bottom-nav{
-      display:flex;background:#1e293b;border-top:1px solid #334155;
-      position:sticky;bottom:0;
+      display:flex;background:#1e293b;border-top:1px solid #334155;position:sticky;bottom:0;
     }
-    .bottom-nav .nav-item{
-      flex:1;display:flex;flex-direction:column;align-items:center;
-      padding:10px;color:#64748b;font-size:11px;cursor:pointer;gap:3px;border:none;background:none;font-family:'Inter',sans-serif;
+    .nav-item{
+      flex:1;display:flex;flex-direction:column;align-items:center;padding:10px;
+      color:#64748b;font-size:11px;cursor:pointer;grid-gap:3px;gap:3px;border:none;background:none;font-family:'Inter',sans-serif;
     }
-    .bottom-nav .nav-item.active{color:#e2b54b}
-    .bottom-nav .nav-item .icon{font-size:20px}
+    .nav-item.active{color:#e2b54b}
+    .nav-item .nav-icon{font-size:19px}
 
     /* Toast */
     .toast{
@@ -111,35 +130,142 @@
     .toast.show{opacity:1}
     .toast.error{background:#dc2626}
 
-    /* Section header */
-    .section-title{font-size:13px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
-    .update-link{font-size:12px;color:#e2b54b;text-decoration:none;font-weight:500}
-
-    /* Responsive phone frame feel */
     @media(min-width:481px){
       .app{border-left:1px solid #1e293b;border-right:1px solid #1e293b}
-      .toast{max-width:440px}
     }
   </style>
 </head>
 <body>
 <div class="app">
-  <!-- Topbar -->
   <div class="topbar">
     <div class="logo">⚓ Golden Harbor<span>Loan Consultant</span></div>
   </div>
 
-  <!-- Form Tab -->
-  <div class="page" id="page-form">
-    <div class="onboarding" id="onboarding">
-      <div class="icon">🏦</div>
-      <h1>Bank Loan <span>Got Rejected?</span></h1>
-      <p>We help you prepare the right documents and submit to the right bank. 87% approval rate from 300+ applications.</p>
+  <!-- Tab 1: Diagnostic -->
+  <div class="page active" id="page-diagnostic">
+    <p style="font-size:13px;color:#94a3b8;margin-bottom:8px">Why was your loan rejected?</p>
+    <div class="progress-row">
+      <div class="progress-dot" id="dot0"></div>
+      <div class="progress-dot" id="dot1"></div>
+      <div class="progress-dot" id="dot2"></div>
+      <div class="progress-dot" id="dot3"></div>
+      <span class="progress-label" id="progressLabel">Tap each to learn more</span>
     </div>
+
+    <div class="reason-card" id="reason0" onclick="toggleReason(0)">
+      <div class="head">
+        <span class="icon">📊</span>
+        <div style="flex:1">
+          <div class="title">CCRIS / CTOS Record</div>
+          <div class="subtitle">Late payments hurting your credit score</div>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="expand">
+        <h4>What's happening</h4>
+        <p>Banks check CCRIS (Central Credit Reference Information System) and CTOS. Late payments, defaults, or too many loans — even settled ones — appear on your record and can cause automatic rejection.</p>
+        <h4>What you can do</h4>
+        <p>① Check your CTOS score (free via CTOS app)<br>② Settle any outstanding late payments<br>③ If there are errors, dispute them<br>④ Wait 6-12 months of clean payment history before reapplying</p>
+        <h4>How we help</h4>
+        <p>We review your CCRIS/CTOS report and tell you exactly what's hurting your score — and which banks are more flexible with credit history.</p>
+      </div>
+    </div>
+
+    <div class="reason-card" id="reason1" onclick="toggleReason(1)">
+      <div class="head">
+        <span class="icon">📄</span>
+        <div style="flex:1">
+          <div class="title">Wrong or Incomplete Documents</div>
+          <div class="subtitle">Missing payslips, wrong bank statements</div>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="expand">
+        <h4>What's happening</h4>
+        <p>Banks are strict about documents. Wrong format payslip, bank statement missing transaction details, EPF not matching declared income — any mismatch triggers rejection.</p>
+        <h4>What you can do</h4>
+        <p>① Ensure payslips show company name, your name, salary breakdown<br>② Bank statements must be 6 months, show salary credited<br>③ EPF statement must match your payslip income<br>④ If self-employed: Form B, SSM, and 6 months bank statements</p>
+        <h4>How we help</h4>
+        <p>We give you a precise checklist for your situation, review every document before you submit, and flag issues early.</p>
+      </div>
+    </div>
+
+    <div class="reason-card" id="reason2" onclick="toggleReason(2)">
+      <div class="head">
+        <span class="icon">🏦</span>
+        <div style="flex:1">
+          <div class="title">Applied to the Wrong Bank</div>
+          <div class="subtitle">Each bank has different criteria</div>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="expand">
+        <h4>What's happening</h4>
+        <p>Maybank, CIMB, RHB, Public Bank — they all have different approval criteria. Some favor government staff, some favor high income, some accept lower CTOS scores. Applying to the wrong bank wastes your application and leaves a rejection on your record.</p>
+        <h4>What you can do</h4>
+        <p>① Research each bank's minimum income and credit requirements<br>② Don't apply to multiple banks at once — each rejection appears on CCRIS<br>③ Match your profile (income, employment type, credit score) to the right bank</p>
+        <h4>How we help</h4>
+        <p>We know each bank's criteria. We match your profile to the bank most likely to approve you — saving rejections on your record.</p>
+      </div>
+    </div>
+
+    <div class="reason-card" id="reason3" onclick="toggleReason(3)">
+      <div class="head">
+        <span class="icon">💰</span>
+        <div style="flex:1">
+          <div class="title">Income vs. Commitment (DSR)</div>
+          <div class="subtitle">Your debt service ratio is too high</div>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="expand">
+        <h4>What's happening</h4>
+        <p>Banks calculate DSR (Debt Service Ratio) = total monthly commitments ÷ monthly income. If you have car loan + credit card + PTPTN + existing personal loan, your DSR might exceed the bank's limit (usually 60-70%).</p>
+        <h4>What you can do</h4>
+        <p>① Calculate your DSR: add all monthly commitments ÷ net income<br>② Pay down credit card balances and smaller loans first<br>③ Consider a longer tenure to lower the monthly commitment shown<br>④ Consolidate multiple debts into one lower monthly payment</p>
+        <h4>How we help</h4>
+        <p>We calculate your DSR, identify which commitments are hurting you, and advise on the right loan amount and tenure that fits your profile.</p>
+      </div>
+    </div>
+
+    <div class="cta-card" id="ctaAfterReading" style="display:none">
+      <h3>Now you know why 🤝</h3>
+      <p>Let us review your case for free and tell you exactly how to get approved.</p>
+      <button class="btn btn-gold btn-full" onclick="switchTab('contact')">Get Free Consultation</button>
+    </div>
+    <br>
+  </div>
+
+  <!-- Tab 2: Documents -->
+  <div class="page" id="page-docs">
+    <div class="checklist-header">
+      <h2 style="font-size:18px">Your Documents</h2>
+      <span class="progress-badge" id="progressBadge">0/6 ready</span>
+    </div>
+    <p style="font-size:12px;color:#94a3b8;margin-bottom:16px">Tick each document as you prepare it. We'll guide you through the rest.</p>
+
+    <div class="section-label">Must Have</div>
+    <div id="checklistMain"></div>
+
+    <div class="section-label" id="checklistLabel" style="margin-top:8px">Personal Loan</div>
+    <div id="checklistExtra"></div>
+
+    <div style="text-align:center;margin-top:20px">
+      <p style="color:#64748b;font-size:11px;margin-bottom:8px">Stuck on a document?</p>
+      <a href="https://wa.me/60146326569" class="btn btn-outline">📱 WhatsApp Us</a>
+    </div>
+    <br>
+  </div>
+
+  <!-- Tab 3: Contact -->
+  <div class="page" id="page-contact">
+    <h2 style="font-size:18px;margin-bottom:14px">Get Free Consultation</h2>
+    <p style="font-size:13px;color:#94a3b8;margin-bottom:16px">Tell us about your situation. We'll call you within 24 hours to review your case.</p>
+
     <form id="leadForm">
       <div class="form-group">
         <label>Full Name *</label>
-        <input type="text" id="fName" placeholder="Your full name as per IC" required>
+        <input type="text" id="fName" placeholder="Full name as per IC" required>
       </div>
       <div class="form-group">
         <label>Phone Number *</label>
@@ -152,77 +278,48 @@
       <div class="form-group">
         <label>Loan Type *</label>
         <select id="fLoanType" required>
-          <option value="">Select loan type</option>
+          <option value="">Select</option>
           <option value="Personal Loan">Personal Loan</option>
           <option value="SME Business Loan">SME / Business Loan</option>
         </select>
       </div>
       <div class="form-group">
-        <label>Loan Amount Needed (RM)</label>
+        <label>Loan Amount (RM)</label>
         <input type="number" id="fAmount" placeholder="e.g. 50000" min="1000">
       </div>
       <div class="form-group">
         <label>Tell Us About Your Situation</label>
-        <textarea id="fNotes" rows="3" placeholder="Employment type, past rejections, or anything we should know..."></textarea>
+        <textarea id="fNotes" rows="3" placeholder="Past rejections, CCRIS issues, employment type..."></textarea>
       </div>
       <button type="submit" class="btn btn-gold btn-full" id="sendBtn">📤 Send Request</button>
-      <p style="text-align:center;color:#64748b;font-size:12px;margin-top:10px">We'll contact you within 24 hours</p>
+      <p style="text-align:center;color:#64748b;font-size:11px;margin-top:8px">Free. No obligation. We'll WhatsApp you.</p>
     </form>
-    <br>
-  </div>
 
-  <!-- Documents Tab -->
-  <div class="page" id="page-docs">
-    <div class="checklist-header">
-      <h2>Your Documents</h2>
-      <span class="progress-badge" id="progressBadge">0/5 ready</span>
-    </div>
-    <p style="color:#94a3b8;font-size:13px;margin-bottom:16px">
-      Tick each document as you prepare it. We'll guide you through the rest when we call.
-    </p>
-
-    <div class="section-title">Required for All Loans</div>
-    <div id="checklistCommon"></div>
-
-    <div class="section-title" id="checklistLabel" style="margin-top:16px">Personal Loan Documents</div>
-    <div id="checklistExtra"></div>
-
-    <div style="text-align:center;margin-top:20px">
-      <p style="color:#64748b;font-size:12px">Need help with any document?</p>
-      <a href="https://wa.me/60146326569" class="btn btn-outline" style="margin-top:8px;display:inline-block">📱 WhatsApp Us</a>
-    </div>
-    <br>
-  </div>
-
-  <!-- Contact Tab -->
-  <div class="page" id="page-contact">
-    <h2 style="margin-bottom:16px">Contact Us</h2>
-    <div class="card">
-      <h3>📱 WhatsApp</h3>
-      <p>+60 14-632 6569</p>
-      <a href="https://wa.me/60146326569" class="btn btn-gold" style="margin-top:10px">Chat Now →</a>
-    </div>
-    <div class="card">
-      <h3>✉️ Email</h3>
-      <p>marcus.lim.ghb@gmail.com</p>
-    </div>
-    <div class="card">
-      <h3>📍 Location</h3>
-      <p>Level 10, B01-C, Menara 2, No. 3, Jalan Bangsar, 59200 Kuala Lumpur</p>
+    <div style="margin-top:24px">
+      <div class="section-label">Direct Contact</div>
+      <div class="contact-card">
+        <h4>📱 WhatsApp</h4>
+        <p>+60 14-632 6569</p>
+        <a href="https://wa.me/60146326569" class="btn btn-gold" style="display:inline-block;margin-top:8px;padding:10px 20px;font-size:13px">Chat Now →</a>
+      </div>
+      <div class="contact-card">
+        <h4>✉️ Email</h4>
+        <p>marcus.lim.ghb@gmail.com</p>
+      </div>
     </div>
     <br>
   </div>
 
   <!-- Bottom Nav -->
   <div class="bottom-nav">
-    <button class="nav-item" data-page="docs" onclick="switchTab('docs')">
-      <span class="icon">📄</span>Documents
+    <button class="nav-item active" data-page="diagnostic" onclick="switchTab('diagnostic')">
+      <span class="nav-icon">🔍</span>Diagnose
     </button>
-    <button class="nav-item active" data-page="form" onclick="switchTab('form')">
-      <span class="icon">📝</span>Get Help
+    <button class="nav-item" data-page="docs" onclick="switchTab('docs')">
+      <span class="nav-icon">📄</span>Documents
     </button>
     <button class="nav-item" data-page="contact" onclick="switchTab('contact')">
-      <span class="icon">📞</span>Contact
+      <span class="nav-icon">📞</span>Contact
     </button>
   </div>
 </div>
@@ -232,96 +329,118 @@
 <script>
   const API = 'https://bridgeloan.pythonanywhere.com/api/gh-submit';
 
-  // --- Checklists ---
-  const commonDocs = [
-    {id:'ic', icon:'🪪', text:'IC (Identity Card)', detail:'Front & back copy'},
-    {id:'ctos', icon:'📊', text:'CTOS / CCRIS Report', detail:'Latest credit report'},
-  ];
-
-  const personalDocs = [
-    {id:'payslip', icon:'💰', text:'Payslip (3 months)', detail:'Latest 3 months'},
-    {id:'bank', icon:'🏦', text:'Bank Statement (6 months)', detail:'Latest 6 months'},
-    {id:'epf', icon:'📈', text:'EPF Statement', detail:'Latest statement'},
-  ];
-
-  const smeDocs = [
-    {id:'ssm', icon:'📋', text:'SSM Business Registration', detail:'Company registration certificate'},
-    {id:'bankBiz', icon:'🏦', text:'Bank Statement (6 months)', detail:'Company bank account'},
-    {id:'tax', icon:'🧾', text:'Tax Return / Form B', detail:'Latest tax filing'},
-  ];
-
-  // --- State ---
+  // === State ===
   function loadState() {
     return JSON.parse(localStorage.getItem('gh_state') || '{}');
   }
-  function saveState(state) {
-    localStorage.setItem('gh_state', JSON.stringify(state));
-  }
+  function saveState(s) { localStorage.setItem('gh_state', JSON.stringify(s)); }
 
   let state = loadState();
   if (!state.checks) state.checks = {};
   if (!state.loanType) state.loanType = 'Personal Loan';
+  if (!state.seenReasons) state.seenReasons = {};
 
-  // --- Render Checklists ---
-  function renderChecklist(list, containerId) {
-    const el = document.getElementById(containerId);
-    el.innerHTML = list.map(doc => {
-      const checked = state.checks[doc.id];
-      return `
-        <div class="check-item${checked ? ' checked' : ''}" onclick="toggleDoc('${doc.id}')">
-          <div class="checkbox"><span class="check-icon">✓</span></div>
-          <div class="check-text">
-            ${doc.text}
-            <div class="check-detail">${doc.detail}</div>
-          </div>
-          <span style="font-size:27px">${doc.icon}</span>
-        </div>`;
-    }).join('');
-  }
-
-  function renderAllChecklists() {
-    renderChecklist(commonDocs, 'checklistCommon');
-    const isSME = state.loanType === 'SME Business Loan';
-    document.getElementById('checklistLabel').textContent = isSME ? 'Business Loan Documents' : 'Personal Loan Documents';
-    renderChecklist(isSME ? smeDocs : personalDocs, 'checklistExtra');
-    updateProgress();
-  }
-
-  function toggleDoc(id) {
-    state.checks[id] = !state.checks[id];
+  // === Reason Cards ===
+  function toggleReason(idx) {
+    const card = document.getElementById('reason' + idx);
+    card.classList.toggle('open');
+    state.seenReasons[idx] = true;
     saveState(state);
-    renderAllChecklists();
+    updateProgress();
+    checkAllRead();
   }
 
   function updateProgress() {
-    const all = [...commonDocs, state.loanType === 'SME Business Loan' ? smeDocs : personalDocs];
+    const count = Object.keys(state.seenReasons).length;
+    for (let i = 0; i < 4; i++) {
+      document.getElementById('dot' + i).className = 'progress-dot' + (state.seenReasons[i] ? ' done' : '');
+    }
+    const labels = ['Tap each to learn more', '1 of 4 read', '2 of 4 read', '3 of 4 read', 'All 4 — well done!'];
+    document.getElementById('progressLabel').textContent = labels[count];
+  }
+
+  function checkAllRead() {
+    if (Object.keys(state.seenReasons).length >= 4) {
+      document.getElementById('ctaAfterReading').style.display = 'block';
+    }
+  }
+
+  // Init reason cards
+  Object.keys(state.seenReasons).forEach(idx => {
+    document.getElementById('reason' + idx).classList.add('open');
+  });
+  updateProgress();
+  checkAllRead();
+
+  // === Checklist ===
+  const mainDocs = [
+    {id:'ic', icon:'🪪', text:'IC (Identity Card)', why:'Front & back copy'},
+    {id:'ctos', icon:'📊', text:'CTOS / CCRIS Report', why:'Check for errors first'},
+  ];
+
+  const personalDocs = [
+    {id:'payslip', icon:'💰', text:'Payslip (3 months)', why:'Must show company name & salary breakdown'},
+    {id:'bankStmt', icon:'🏦', text:'Bank Statement (6 months)', why:'Show salary credited monthly'},
+    {id:'epf', icon:'📈', text:'EPF Statement', why:'Must match payslip income'},
+    {id:'empLetter', icon:'📝', text:'Employment Verification Letter', why:'Confirms position & salary'},
+  ];
+
+  const smeDocs = [
+    {id:'ssm', icon:'📋', text:'SSM Registration', why:'Company registration certificate'},
+    {id:'bankBiz', icon:'🏦', text:'Bank Statement (6 months)', why:'Company bank account transactions'},
+    {id:'tax', icon:'🧾', text:'Tax Return / Form B', why:'Latest tax filing'},
+    {id:'contract', icon:'📑', text:'Supplier / Client Contracts', why:'Proves business activity'},
+  ];
+
+  function renderChecklist(list, elId) {
+    document.getElementById(elId).innerHTML = list.map(d => {
+      const c = state.checks[d.id];
+      return `<div class="check-item${c ? ' checked' : ''}" onclick="toggleCheck('${d.id}')">
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <div class="check-text">${d.text}<div class="check-why">${d.why}</div></div>
+        <span style="font-size:24px">${d.icon}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function renderAll() {
+    renderChecklist(mainDocs, 'checklistMain');
+    const isSME = state.loanType === 'SME Business Loan';
+    document.getElementById('checklistLabel').textContent = isSME ? 'Business Loan' : 'Personal Loan';
+    renderChecklist(isSME ? smeDocs : personalDocs, 'checklistExtra');
+    const all = [...mainDocs, ...(isSME ? smeDocs : personalDocs)];
     const done = all.filter(d => state.checks[d.id]).length;
     document.getElementById('progressBadge').textContent = `${done}/${all.length} ready`;
   }
 
-  // --- Tabs ---
+  function toggleCheck(id) {
+    state.checks[id] = !state.checks[id];
+    saveState(state);
+    renderAll();
+  }
+
+  // === Tabs ===
   function switchTab(tab) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('page-' + tab).classList.add('active');
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.querySelector('.nav-item[data-page="' + tab + '"]').classList.add('active');
-    if (tab === 'docs') renderAllChecklists();
+    if (tab === 'docs') renderAll();
   }
 
-  // --- Toast ---
-  function toast(msg, isErr) {
+  // === Toast ===
+  function toast(msg, err) {
     const t = document.getElementById('toast');
     t.textContent = msg;
-    t.className = 'toast' + (isErr ? ' error' : '') + ' show';
+    t.className = 'toast' + (err ? ' error' : '') + ' show';
     setTimeout(() => t.classList.remove('show'), 3500);
   }
 
-  // --- Form Submit ---
+  // === Form ===
   document.getElementById('leadForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const btn = document.getElementById('sendBtn');
-    btn.disabled = true;
-    btn.textContent = 'Sending...';
+    btn.disabled = true; btn.textContent = 'Sending...';
 
     const data = {
       name: document.getElementById('fName').value.trim(),
@@ -333,49 +452,36 @@
     };
 
     state.loanType = data.loan_type;
-    state.name = data.name;
-    state.phone = data.phone;
-    state.email = data.email;
+    state.name = data.name; state.phone = data.phone; state.email = data.email;
     saveState(state);
 
     try {
       const res = await fetch(API, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type':'application/json'},
         body: JSON.stringify(data)
       });
-      const result = await res.json();
-      if (result.success) {
-        toast('✅ We got your request — will contact you soon!');
-        document.getElementById('onboarding').style.display = 'none';
-        renderAllChecklists();
+      const r = await res.json();
+      if (r.success) {
+        toast('✅ We received your request — will contact you within 24h');
+        renderAll();
         switchTab('docs');
       } else {
         toast('Something went wrong. Try again or WhatsApp us.', true);
       }
     } catch(err) {
-      toast('Network error. Check your connection or WhatsApp us.', true);
+      toast('Network error. Try again or WhatsApp us.', true);
     }
 
-    btn.disabled = false;
-    btn.textContent = '📤 Send Request';
+    btn.disabled = false; btn.textContent = '📤 Send Request';
   });
 
-  // --- Init ---
-  // Pre-fill form from saved state
+  // === Init ===
   if (state.name) document.getElementById('fName').value = state.name;
   if (state.phone) document.getElementById('fPhone').value = state.phone;
   if (state.email) document.getElementById('fEmail').value = state.email;
   if (state.loanType) document.getElementById('fLoanType').value = state.loanType;
 
-  if (state.name) {
-    // Returning user — show docs tab (after form was submitted before)
-    document.getElementById('onboarding').style.display = 'none';
-    renderAllChecklists();
-    switchTab('docs');
-  }
-
-  // Service worker
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
 </body>
