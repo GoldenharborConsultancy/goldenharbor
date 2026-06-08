@@ -26,7 +26,7 @@ document.querySelectorAll('.faq-question').forEach(btn => {
 
 // ─── Form Submission — WhatsApp ───
 const form = document.getElementById('consultForm');
-const WHATSAPP_NUMBER = '601139487938';
+const WHATSAPP_NUMBER = '60146326569';
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
