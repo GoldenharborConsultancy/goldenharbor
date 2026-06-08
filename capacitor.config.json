@@ -1,0 +1,9 @@
+{
+  "appId": "my.goldenharbor.app",
+  "appName": "Golden Harbor",
+  "webDir": ".",
+  "server": {
+    "url": "https://goldenharborconsultancy.github.io/goldenharbor/app.html",
+    "cleartext": true
+  }
+}
