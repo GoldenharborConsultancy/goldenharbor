@@ -28,6 +28,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Prepare web assets
+        run: |
+          mkdir -p www
+          cp app.html app.js manifest.json sw.js icon-192.png icon-512.png www/
+
       - name: Sync Capacitor
         run: npx cap sync android
 
