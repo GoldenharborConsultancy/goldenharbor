@@ -205,13 +205,14 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
 
       // Validate extracted data
       const warnings = [];
-      if (income < 500) warnings.push('Could not find income in payslip. Upload the correct file.');
-      if (commits < 50) warnings.push('Could not find loan payments in bank statement. Upload the correct file.');
-      if (!pt || pt.length < 10) warnings.push('Payslip PDF appears empty.');
-      if (!bt || bt.length < 10) warnings.push('Bank statement PDF appears empty.');
-      if (!ct || ct.length < 10) warnings.push('CTOS PDF appears empty');
-      if (warnings.length >= 2) throw new Error('Multiple issues detected:\\n' + warnings.join('\\n'));
-      if (warnings.length === 1) toast('⚠️ ' + warnings[0], true);
+      if (income < 500) warnings.push('Could not find income in payslip');
+      if (commits < 50) warnings.push('Could not find loan payments in bank statement');
+      if (!pt || pt.length < 20) warnings.push('Payslip PDF appears empty');
+      if (!bt || bt.length < 20) warnings.push('Bank statement PDF appears empty');
+      if (!ct || ct.length < 20) warnings.push('CTOS PDF appears empty');
+      // Income found but no commitments = likely swapped files
+      if (income > 500 && commits < 50) warnings.push('Bank statement shows no loan payments. Check file is correct.');
+      if (warnings.length >= 2 || (income > 500 && commits < 50)) throw new Error('Unable to calculate score:\\n' + warnings.join('\\n'));
       const bankrupt = ci.bankrupt||false;
       const defaults = ci.defaults||false;
       const late = parseInt(ci.late_count)||0;
