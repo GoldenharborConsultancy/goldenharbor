@@ -10,454 +10,243 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    body{
-      font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;
-      min-height:100vh;min-height:100dvh;display:flex;justify-content:center;
-      -webkit-tap-highlight-color:transparent;
-    }
+    body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;min-height:100dvh;display:flex;justify-content:center;-webkit-tap-highlight-color:transparent}
     .app{width:100%;max-width:480px;display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
-    .topbar{
-      padding:16px 20px;display:flex;align-items:center;gap:12px;
-      border-bottom:1px solid #1e293b;
-    }
+    .topbar{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #1e293b}
     .topbar .logo{font-weight:800;font-size:16px;color:#e2b54b}
-    .topbar .logo span{color:#94a3b8;font-weight:400;font-size:12px;margin-left:6px}
     .page{display:none;flex:1;padding:20px;overflow-y:auto}
     .page.active{display:block}
-
-    /* Back */
     .back-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px}
     .back-btn{background:none;border:none;color:#e2b54b;font-size:22px;cursor:pointer;padding:0 4px;line-height:1}
-
-    /* Loan type picker */
     .type-cards{display:grid;gap:12px;margin-bottom:20px}
-    .type-card{
-      background:#1e293b;border:2px solid #334155;border-radius:14px;padding:20px;
-      text-align:center;cursor:pointer;transition:all .2s;
-    }
-    .type-card:hover{border-color:#475569}
+    .type-card{background:#1e293b;border:2px solid #334155;border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all .2s}
     .type-card.selected{border-color:#e2b54b;background:#1a2744}
     .type-card .t-icon{font-size:36px;margin-bottom:8px}
     .type-card .t-name{font-weight:700;font-size:16px}
     .type-card .t-desc{font-size:12px;color:#94a3b8;margin-top:4px}
-
-    /* Upload */
-    .upload-box{
-      background:#1e293b;border:2px dashed #334155;border-radius:14px;padding:24px;
-      text-align:center;cursor:pointer;margin-bottom:12px;transition:all .2s;
-      position:relative;
-    }
-    .upload-box:hover{border-color:#475569}
+    .upload-box{background:#1e293b;border:2px dashed #334155;border-radius:14px;padding:24px;text-align:center;cursor:pointer;margin-bottom:12px;position:relative}
     .upload-box.uploaded{border-color:#22c55e;border-style:solid}
     .upload-box .u-icon{font-size:32px;margin-bottom:8px}
     .upload-box .u-label{font-weight:600;font-size:14px}
     .upload-box .u-hint{font-size:11px;color:#64748b;margin-top:4px}
     .upload-box .u-file{font-size:12px;color:#22c55e;margin-top:4px}
     .upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
-
-    /* Form */
     .form-group{margin-bottom:14px}
     .form-group label{display:block;font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:4px;text-transform:uppercase}
-    .form-group input,.form-group select{
-      width:100%;padding:14px;background:#1e293b;border:1px solid #334155;
-      border-radius:10px;color:#e2e8f0;font-size:15px;font-family:'Inter',sans-serif;outline:none;
-    }
+    .form-group input,.form-group select{width:100%;padding:14px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#e2e8f0;font-size:15px;font-family:'Inter',sans-serif;outline:none}
     .form-group input:focus,.form-group select:focus{border-color:#e2b54b}
-    .form-group select{
-      appearance:none;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-      background-repeat:no-repeat;background-position:right 14px center;
-    }
-
-    /* Buttons */
-    .btn{
-      display:inline-block;padding:14px 28px;border-radius:12px;font-weight:700;font-size:14px;
-      text-decoration:none;cursor:pointer;border:none;font-family:'Inter',sans-serif;text-align:center;
-    }
-    .btn-gold{background:linear-gradient(135deg,#e2b54b,#c9952e);color:#0f172a}
-    .btn-gold:disabled{opacity:.5;cursor:not-allowed}
+    .form-group select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+    .btn{display:inline-block;padding:14px 28px;border-radius:12px;font-weight:700;font-size:14px;text-decoration:none;cursor:pointer;border:none;font-family:'Inter',sans-serif;text-align:center}
+    .btn-gold{background:linear-gradient(135deg,#e2b54b,#c9952e);color:#0f172a}.btn-gold:disabled{opacity:.5}
     .btn-full{width:100%;padding:16px}
     .btn-outline{background:transparent;color:#e2b54b;border:1px solid #334155}
-
-    /* Result */
-    .score-circle{
-      width:120px;height:120px;border-radius:50%;display:flex;align-items:center;
-      justify-content:center;flex-direction:column;margin:20px auto;
-      border:4px solid #334155;
-    }
-    .score-circle .num{font-size:42px;font-weight:800}
-    .score-circle .label{font-size:12px;color:#94a3b8}
-    .score-circle.red{border-color:#dc2626}
-    .score-circle.orange{border-color:#f97316}
-    .score-circle.yellow{border-color:#eab308}
-    .score-circle.green{border-color:#22c55e}
-
-    .rating-badge{
-      display:inline-block;padding:6px 16px;border-radius:20px;font-weight:700;font-size:14px;
-      text-align:center;margin:0 auto 20px;
-    }
-    .rating-badge.red{background:#7f1d1d;color:#fca5a5}
-    .rating-badge.orange{background:#7c2d12;color:#fdba74}
-    .rating-badge.yellow{background:#713f12;color:#fde047}
-    .rating-badge.green{background:#14532d;color:#86efac}
-
-    .breakdown-item{
-      display:flex;align-items:center;gap:12px;padding:14px;
-      background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:8px;
-    }
-    .breakdown-item .b-icon{font-size:22px}
-    .breakdown-item .b-info{flex:1}
-    .breakdown-item .b-name{font-size:13px;font-weight:600}
-    .breakdown-item .b-detail{font-size:11px;color:#64748b}
-    .breakdown-item .b-score{font-weight:700;font-size:16px;text-align:right}
-    .breakdown-item .b-max{font-size:11px;color:#64748b}
-
-    /* Progress bar */
+    .score-circle{width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;margin:20px auto;border:4px solid #334155}
+    .score-circle .num{font-size:42px;font-weight:800}.score-circle .label{font-size:12px;color:#94a3b8}
+    .score-circle.red{border-color:#dc2626}.score-circle.orange{border-color:#f97316}.score-circle.yellow{border-color:#eab308}.score-circle.green{border-color:#22c55e}
+    .rating-badge{display:inline-block;padding:6px 16px;border-radius:20px;font-weight:700;font-size:14px;text-align:center;margin:0 auto 20px}
+    .rating-badge.red{background:#7f1d1d;color:#fca5a5}.rating-badge.orange{background:#7c2d12;color:#fdba74}.rating-badge.yellow{background:#713f12;color:#fde047}.rating-badge.green{background:#14532d;color:#86efac}
+    .breakdown-item{display:flex;align-items:center;gap:12px;padding:14px;background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:8px}
+    .breakdown-item .b-icon{font-size:22px}.breakdown-item .b-info{flex:1}
+    .breakdown-item .b-name{font-size:13px;font-weight:600}.breakdown-item .b-detail{font-size:11px;color:#64748b}
+    .breakdown-item .b-score{font-weight:700;font-size:16px;text-align:right}.breakdown-item .b-max{font-size:11px;color:#64748b}
     .bar-wrap{height:6px;background:#334155;border-radius:3px;margin-top:4px}
     .bar-fill{height:100%;border-radius:3px;background:#e2b54b;transition:width .5s}
-    .bar-fill.low{background:#dc2626}
-    .bar-fill.mid{background:#eab308}
-    .bar-fill.high{background:#22c55e}
-
-    /* Bottom nav */
-    .bottom-nav{
-      display:flex;background:#1e293b;border-top:1px solid #334155;position:sticky;bottom:0;
-    }
-    .nav-item{
-      flex:1;display:flex;flex-direction:column;align-items:center;padding:10px;
-      color:#64748b;font-size:11px;cursor:pointer;gap:3px;border:none;background:none;font-family:'Inter',sans-serif;
-    }
-    .nav-item.active{color:#e2b54b}
-    .nav-item .nav-icon{font-size:19px}
-
-    /* Toast */
-    .toast{
-      position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#22c55e;
-      color:#fff;padding:12px 24px;border-radius:12px;font-weight:600;z-index:999;
-      opacity:0;pointer-events:none;transition:opacity .3s;
-    }
-    .toast.show{opacity:1}
-    .toast.error{background:#dc2626}
-
-    .spinner{
-      display:inline-block;width:20px;height:20px;border:2px solid #0f172a;border-top-color:transparent;
-      border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:8px;
-    }
+    .bar-fill.low{background:#dc2626}.bar-fill.mid{background:#eab308}.bar-fill.high{background:#22c55e}
+    .bottom-nav{display:flex;background:#1e293b;border-top:1px solid #334155;position:sticky;bottom:0}
+    .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px;color:#64748b;font-size:11px;cursor:pointer;gap:3px;border:none;background:none;font-family:'Inter',sans-serif}
+    .nav-item.active{color:#e2b54b}.nav-item .nav-icon{font-size:19px}
+    .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#22c55e;color:#fff;padding:12px 24px;border-radius:12px;font-weight:600;z-index:999;opacity:0;pointer-events:none;transition:opacity .3s}
+    .toast.show{opacity:1}.toast.error{background:#dc2626}
+    .spinner{display:inline-block;width:20px;height:20px;border:2px solid #0f172a;border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:8px}
     @keyframes spin{to{transform:rotate(360deg)}}
-
     .disclaimer{font-size:11px;color:#64748b;text-align:center;margin-top:12px}
     @media(min-width:481px){.app{border-left:1px solid #1e293b;border-right:1px solid #1e293b}}
   </style>
 </head>
 <body>
 <div class="app">
-  <div class="topbar">
-    <div class="logo">⚓ Golden Harbor<span>Loan Score</span></div>
-  </div>
+  <div class="topbar"><div class="logo">⚓ Golden Harbor<span style="color:#94a3b8;font-weight:400;font-size:12px;margin-left:6px">Loan Score</span></div></div>
 
-  <!-- Tab: Score -->
+  <!-- Score Tab -->
   <div class="page active" id="page-score">
-    <!-- Step 1: Pick loan type -->
     <div id="stepType">
-      <p style="font-size:13px;color:#94a3b8;margin-bottom:12px">What type of loan are you applying for?</p>
+      <p style="font-size:13px;color:#94a3b8;margin-bottom:12px">What type of loan?</p>
       <div class="type-cards">
-        <div class="type-card" onclick="selectType('Personal Loan', this)">
-          <div class="t-icon">👤</div>
-          <div class="t-name">Personal Loan</div>
-          <div class="t-desc">For salaried individuals</div>
-        </div>
-        <div class="type-card" onclick="selectType('SME Business Loan', this)">
-          <div class="t-icon">🏢</div>
-          <div class="t-name">SME / Business Loan</div>
-          <div class="t-desc">For business owners</div>
-        </div>
-        <div class="type-card" onclick="selectType('Housing Loan', this)">
-          <div class="t-icon">🏠</div>
-          <div class="t-name">Housing Loan</div>
-          <div class="t-desc">For home buyers</div>
-        </div>
+        <div class="type-card" onclick="selectType('Personal Loan',this)"><div class="t-icon">👤</div><div class="t-name">Personal Loan</div><div class="t-desc">For salaried individuals</div></div>
+        <div class="type-card" onclick="selectType('SME Business Loan',this)"><div class="t-icon">🏢</div><div class="t-name">SME / Business Loan</div><div class="t-desc">For business owners</div></div>
+        <div class="type-card" onclick="selectType('Housing Loan',this)"><div class="t-icon">🏠</div><div class="t-name">Housing Loan</div><div class="t-desc">For home buyers</div></div>
       </div>
     </div>
 
-    <!-- Step 2: Upload documents + employment -->
     <div id="stepUpload" style="display:none">
-      <div class="back-bar">
-        <button class="back-btn" onclick="backToType()">←</button>
-        <span style="font-weight:700" id="selectedTypeLabel">Personal Loan</span>
-      </div>
-      <p style="font-size:12px;color:#94a3b8;margin-bottom:16px">Upload 3 PDF documents to get your loan approval score</p>
-
-      <div class="upload-box" id="boxPayslip">
-        <div class="u-icon">💰</div>
-        <div class="u-label">Payslip</div>
-        <div class="u-hint">Latest month payslip (PDF)</div>
-        <div class="u-file"></div>
-        <input type="file" accept=".pdf" onchange="fileSelected(this, 'payslip', 'boxPayslip')">
-      </div>
-
-      <div class="upload-box" id="boxBank">
-        <div class="u-icon">🏦</div>
-        <div class="u-label">Bank Statement</div>
-        <div class="u-hint">Latest 1-3 months (PDF)</div>
-        <div class="u-file"></div>
-        <input type="file" accept=".pdf" onchange="fileSelected(this, 'bank', 'boxBank')">
-      </div>
-
-      <div class="upload-box" id="boxCTOS">
-        <div class="u-icon">📊</div>
-        <div class="u-label">CTOS / CCRIS Report</div>
-        <div class="u-hint">Latest credit report (PDF)</div>
-        <div class="u-file"></div>
-        <input type="file" accept=".pdf" onchange="fileSelected(this, 'ctos', 'boxCTOS')">
-      </div>
-
-      <div class="form-group">
-        <label>Employment Type</label>
-        <select id="empType">
-          <option value="salaried">Salaried Employee</option>
-          <option value="government">Government / GLC</option>
-          <option value="self-employed">Self-Employed / Business</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Years at Current Job</label>
-        <input type="number" id="empYears" placeholder="e.g. 3.5" min="0" step="0.5">
-      </div>
-
-      <button class="btn btn-gold btn-full" id="calcBtn" onclick="calculateScore()">
-        Calculate My Score
-      </button>
-      <p class="disclaimer">Your documents are processed securely. This is an estimate, not a guarantee.</p>
+      <div class="back-bar"><button class="back-btn" onclick="backToType()">←</button><span style="font-weight:700" id="selLabel">Personal Loan</span></div>
+      <p style="font-size:12px;color:#94a3b8;margin-bottom:16px">Upload 3 PDFs — payslip, bank statement, CTOS report</p>
+      <div class="upload-box" id="boxPayslip"><div class="u-icon">💰</div><div class="u-label">Payslip</div><div class="u-hint">Latest month (PDF)</div><div class="u-file"></div><input type="file" accept=".pdf" onchange="fileReady(this,'payslip','boxPayslip')"></div>
+      <div class="upload-box" id="boxBank"><div class="u-icon">🏦</div><div class="u-label">Bank Statement</div><div class="u-hint">Latest 1-3 months (PDF)</div><div class="u-file"></div><input type="file" accept=".pdf" onchange="fileReady(this,'bank','boxBank')"></div>
+      <div class="upload-box" id="boxCTOS"><div class="u-icon">📊</div><div class="u-label">CTOS / CCRIS Report</div><div class="u-hint">Latest report (PDF)</div><div class="u-file"></div><input type="file" accept=".pdf" onchange="fileReady(this,'ctos','boxCTOS')"></div>
+      <div class="form-group"><label>Employment Type</label><select id="empType"><option value="salaried">Salaried</option><option value="government">Government / GLC</option><option value="self-employed">Self-Employed</option></select></div>
+      <div class="form-group"><label>Years at Current Job</label><input type="number" id="empYears" placeholder="e.g. 3.5" min="0" step="0.5"></div>
+      <button class="btn btn-gold btn-full" id="calcBtn" onclick="calculate()">Calculate My Score</button>
+      <p class="disclaimer">Analysis by AI. This is an estimate, not a guarantee.</p>
     </div>
 
-    <!-- Step 3: Result -->
     <div id="stepResult" style="display:none">
-      <div class="back-bar">
-        <button class="back-btn" onclick="backToUpload()">←</button>
-        <span style="font-weight:700">Your Score</span>
-      </div>
-
-      <div class="score-circle" id="scoreCircle">
-        <div class="num" id="scoreNum">--</div>
-        <div class="label">out of 100</div>
-      </div>
-      <div style="text-align:center">
-        <span class="rating-badge" id="ratingBadge">--</span>
-      </div>
-
+      <div class="back-bar"><button class="back-btn" onclick="backToUpload()">←</button><span style="font-weight:700">Your Score</span></div>
+      <div class="score-circle" id="scoreCircle"><div class="num" id="scoreNum">--</div><div class="label">out of 100</div></div>
+      <div style="text-align:center"><span class="rating-badge" id="ratingBadge">--</span></div>
       <div style="margin-bottom:8px;font-size:13px;font-weight:600">Breakdown</div>
-      <div id="breakdownContainer"></div>
-
-      <div style="margin-top:20px;text-align:center">
-        <p style="font-size:14px;color:#cbd5e1;margin-bottom:12px">Want us to help improve your score?</p>
-        <a href="https://wa.me/60146326569" class="btn btn-gold btn-full">📱 WhatsApp Us</a>
-      </div>
-
-      <button class="btn btn-outline btn-full" style="margin-top:10px" onclick="backToType()">
-        Try Another Loan Type
-      </button>
+      <div id="bdContainer"></div>
+      <div style="margin-top:20px;text-align:center"><p style="font-size:14px;color:#cbd5e1;margin-bottom:12px">Want us to help improve your score?</p><a href="https://wa.me/60146326569" class="btn btn-gold btn-full">📱 WhatsApp Us</a></div>
+      <button class="btn btn-outline btn-full" style="margin-top:10px" onclick="backToType()">Try Another Loan Type</button>
     </div>
   </div>
 
-  <!-- Tab: Documents -->
+  <!-- Docs Tab -->
   <div class="page" id="page-docs">
-    <div class="back-bar">
-      <button class="back-btn" onclick="switchTab('score')">←</button>
-      <h2 style="font-size:18px;margin:0">Document Checklist</h2>
-    </div>
-    <p style="font-size:12px;color:#94a3b8;margin-bottom:16px">Prepare these before applying</p>
-
-    <div style="font-size:12px;font-weight:600;color:#64748b;margin:12px 0 8px;text-transform:uppercase">Personal Loan</div>
-    <div class="doc-item">🪪 IC (front & back)</div>
-    <div class="doc-item">💰 Latest 3 months payslip</div>
-    <div class="doc-item">🏦 Latest 6 months bank statement</div>
-    <div class="doc-item">📈 EPF statement</div>
-    <div class="doc-item">📊 CTOS / CCRIS report</div>
-
-    <div style="font-size:12px;font-weight:600;color:#64748b;margin:16px 0 8px;text-transform:uppercase">SME / Business</div>
-    <div class="doc-item">🪪 IC (directors)</div>
-    <div class="doc-item">📋 SSM registration</div>
-    <div class="doc-item">🏦 6 months company bank statement</div>
-    <div class="doc-item">🧾 Latest tax return / Form B</div>
-    <div class="doc-item">📊 CTOS / CCRIS report</div>
-
-    <div style="font-size:12px;font-weight:600;color:#64748b;margin:16px 0 8px;text-transform:uppercase">Housing Loan</div>
-    <div class="doc-item">🪪 IC (all borrowers)</div>
-    <div class="doc-item">💰 3 months payslip</div>
-    <div class="doc-item">🏦 6 months bank statement</div>
-    <div class="doc-item">📊 CTOS / CCRIS report</div>
-    <div class="doc-item">📑 SPA / booking form</div>
-    <br>
+    <div class="back-bar"><button class="back-btn" onclick="switchTab('score')">←</button><h2 style="font-size:18px;margin:0">Documents</h2></div>
+    <p style="font-size:12px;color:#94a3b8;margin-bottom:16px">Checklist for your application</p>
+    <div style="font-size:12px;font-weight:600;color:#64748b;margin:12px 0 8px">Personal Loan</div>
+    <div style="padding:12px;background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:6px;font-size:13px">🪪 IC (front & back)</div>
+    <div style="padding:12px;background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:6px;font-size:13px">💰 Payslip (3 months)</div>
+    <div style="padding:12px;background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:6px;font-size:13px">🏦 Bank Statement (6 months)</div>
+    <div style="padding:12px;background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:6px;font-size:13px">📈 EPF Statement</div>
+    <div style="padding:12px;background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:6px;font-size:13px">📊 CTOS / CCRIS Report</div>
   </div>
 
-  <!-- Tab: Contact -->
+  <!-- Contact Tab -->
   <div class="page" id="page-contact">
-    <div class="back-bar">
-      <button class="back-btn" onclick="switchTab('score')">←</button>
-      <h2 style="font-size:18px;margin:0">Contact Us</h2>
-    </div>
-    <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:16px;margin-bottom:12px">
-      <h4 style="margin-bottom:4px">📱 WhatsApp</h4>
-      <p style="font-size:13px;color:#94a3b8">+60 14-632 6569</p>
-      <a href="https://wa.me/60146326569" class="btn btn-gold" style="display:inline-block;margin-top:8px;padding:10px 20px;font-size:13px">Chat Now →</a>
-    </div>
-    <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:16px;margin-bottom:12px">
-      <h4 style="margin-bottom:4px">✉️ Email</h4>
-      <p style="font-size:13px;color:#94a3b8">marcus.lim.ghb@gmail.com</p>
-    </div>
+    <div class="back-bar"><button class="back-btn" onclick="switchTab('score')">←</button><h2 style="font-size:18px;margin:0">Contact</h2></div>
+    <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:16px;margin-bottom:12px"><h4 style="margin-bottom:4px">📱 WhatsApp</h4><p style="font-size:13px;color:#94a3b8">+60 14-632 6569</p><a href="https://wa.me/60146326569" class="btn btn-gold" style="display:inline-block;margin-top:8px;padding:10px 20px;font-size:13px">Chat Now →</a></div>
+    <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:16px;margin-bottom:12px"><h4 style="margin-bottom:4px">✉️ Email</h4><p style="font-size:13px;color:#94a3b8">marcus.lim.ghb@gmail.com</p></div>
   </div>
 
-  <!-- Bottom Nav -->
   <div class="bottom-nav">
-    <button class="nav-item active" data-page="score" onclick="switchTab('score')">
-      <span class="nav-icon">📊</span>Score
-    </button>
-    <button class="nav-item" data-page="docs" onclick="switchTab('docs')">
-      <span class="nav-icon">📄</span>Docs
-    </button>
-    <button class="nav-item" data-page="contact" onclick="switchTab('contact')">
-      <span class="nav-icon">📞</span>Contact
-    </button>
+    <button class="nav-item active" data-page="score" onclick="switchTab('score')"><span class="nav-icon">📊</span>Score</button>
+    <button class="nav-item" data-page="docs" onclick="switchTab('docs')"><span class="nav-icon">📄</span>Docs</button>
+    <button class="nav-item" data-page="contact" onclick="switchTab('contact')"><span class="nav-icon">📞</span>Contact</button>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 
-<style>
-  .doc-item{
-    display:flex;align-items:center;gap:10px;padding:12px 14px;
-    background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:6px;font-size:13px;
-  }
-</style>
-
 <script>
-  const API = 'https://bridgeloan.pythonanywhere.com/api/score';
+  const DS_KEY = 'sk-878...e777';
+  const DS_URL = 'https://api.deepseek.com/v1/chat/completions';
 
-  let selectedType = '';
-  let files = {};
+  let files = {}, loanType = '';
 
-  function switchTab(tab) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-' + tab).classList.add('active');
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.querySelector('.nav-item[data-page="' + tab + '"]').classList.add('active');
-  }
+  function switchTab(t){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+t).classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.querySelector('.nav-item[data-page="'+t+'"]').classList.add('active')}
+  function selectType(t,el){loanType=t;document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');document.getElementById('selLabel').textContent=t;document.getElementById('stepType').style.display='none';document.getElementById('stepUpload').style.display='block';document.getElementById('stepResult').style.display='none'}
+  function backToType(){document.getElementById('stepType').style.display='block';document.getElementById('stepUpload').style.display='none';document.getElementById('stepResult').style.display='none'}
+  function backToUpload(){document.getElementById('stepUpload').style.display='block';document.getElementById('stepResult').style.display='none'}
+  function fileReady(i,k,b){if(i.files[0]){files[k]=i.files[0];document.getElementById(b).classList.add('uploaded');document.getElementById(b).querySelector('.u-file').textContent=i.files[0].name}}
+  function toast(m,e){const t=document.getElementById('toast');t.textContent=m;t.className='toast'+(e?' error':'')+' show';setTimeout(()=>t.classList.remove('show'),3500)}
 
-  function selectType(type, el) {
-    selectedType = type;
-    document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
-    el.classList.add('selected');
-    document.getElementById('selectedTypeLabel').textContent = type;
-    document.getElementById('stepType').style.display = 'none';
-    document.getElementById('stepUpload').style.display = 'block';
-    document.getElementById('stepResult').style.display = 'none';
-  }
-
-  function backToType() {
-    document.getElementById('stepType').style.display = 'block';
-    document.getElementById('stepUpload').style.display = 'none';
-    document.getElementById('stepResult').style.display = 'none';
-  }
-
-  function backToUpload() {
-    document.getElementById('stepUpload').style.display = 'block';
-    document.getElementById('stepResult').style.display = 'none';
-  }
-
-  function fileSelected(input, key, boxId) {
-    if (input.files.length > 0) {
-      files[key] = input.files[0];
-      const box = document.getElementById(boxId);
-      box.classList.add('uploaded');
-      box.querySelector('.u-file').textContent = input.files[0].name;
+  async function extractPDFText(file) {
+    const buf = await file.arrayBuffer();
+    const bytes = new Uint8Array(buf);
+    let text = '';
+    // Simple PDF text extraction
+    const str = new TextDecoder().decode(bytes);
+    // Find text between stream/endstream and decode FlateDecode
+    const streams = str.match(/stream[\s\S]*?endstream/g) || [];
+    for (const s of streams) {
+      const data = s.replace(/stream\r?\n/,'').replace(/\r?\nendstream/,'');
+      try {
+        // Try raw text first
+        const raw = data.replace(/[^\x20-\x7E\n\r\t]/g,' ').replace(/\s+/g,' ').trim();
+        if (raw.length > 50) text += raw + '\n';
+      } catch(e) {}
     }
-  }
-
-  function toast(msg, err) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'toast' + (err ? ' error' : '') + ' show';
-    setTimeout(() => t.classList.remove('show'), 3500);
-  }
-
-  async function calculateScore() {
-    if (!files.payslip || !files.bank || !files.ctos) {
-      toast('Please upload all 3 PDFs', true);
-      return;
+    // Also try getting text between BT/ET markers (PDF text objects)
+    const btBlocks = str.match(/BT[\s\S]*?ET/g) || [];
+    for (const b of btBlocks) {
+      const tj = b.match(/\((.*?)\)/g) || [];
+      text += tj.map(t=>t.slice(1,-1)).join(' ') + '\n';
     }
+    return text.trim() || 'No readable text found in PDF';
+  }
 
+  async function callDS(system, userText) {
+    const resp = await fetch(DS_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+DS_KEY},
+      body: JSON.stringify({model:'deepseek-v4-flash',messages:[{role:'system',content:system},{role:'user',content:userText.slice(0,8000)}],temperature:0,max_tokens:300})
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error?.message || 'API error');
+    return data.choices[0].message.content.trim();
+  }
+
+  async function calculate() {
+    if (!files.payslip||!files.bank||!files.ctos) return toast('Upload all 3 PDFs',true);
     const btn = document.getElementById('calcBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Analyzing your documents...';
-
-    const formData = new FormData();
-    formData.append('loan_type', selectedType);
-    formData.append('employment_years', document.getElementById('empYears').value || '0');
-    formData.append('employment_type', document.getElementById('empType').value);
-    formData.append('payslip', files.payslip);
-    formData.append('bank_statement', files.bank);
-    formData.append('ctos', files.ctos);
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Reading PDFs...';
 
     try {
-      const res = await fetch(API, { method: 'POST', body: formData });
-      const data = await res.json();
+      // Extract text
+      const pt = await extractPDFText(files.payslip);
+      const bt = await extractPDFText(files.bank);
+      const ct = await extractPDFText(files.ctos);
+      if (!pt&&!bt&&!ct) throw new Error('Could not read PDFs. Use digital PDFs, not scanned images.');
 
-      if (data.success) {
-        showResult(data);
-      } else {
-        toast('❌ ' + (data.message || 'Analysis failed. Try again.'), true);
-      }
-    } catch(err) {
-      toast('❌ Network error. Check your connection.', true);
+      btn.innerHTML = '<span class="spinner"></span> Analyzing...';
+
+      // Call DeepSeek for each doc in parallel
+      const [pr, br, cr] = await Promise.all([
+        callDS('Extract from payslip: net monthly salary (RM) and employer name. Return ONLY JSON: {"income":number,"employer":"name"}', pt),
+        callDS('Extract total MONTHLY loan/credit commitments (car,house,credit card,PTPTN,etc). Return ONLY JSON: {"commitments":number}', bt),
+        callDS('Analyze CTOS/CCRIS: bankrupt? defaults? late payment count? recent applications? Return ONLY JSON: {"bankrupt":bool,"defaults":bool,"late_count":number,"recent_apps":number}', ct)
+      ]);
+
+      const pi = JSON.parse(pr.match(/\{[^}]+\}/)?.[0]||pr);
+      const bi = JSON.parse(br.match(/\{[^}]+\}/)?.[0]||br);
+      const ci = JSON.parse(cr.match(/\{[^}]+\}/)?.[0]||cr);
+
+      const income = parseFloat(pi.income)||0;
+      const employer = pi.employer||'';
+      const commits = parseFloat(bi.commitments)||0;
+      const bankrupt = ci.bankrupt||false;
+      const defaults = ci.defaults||false;
+      const late = parseInt(ci.late_count)||0;
+      const apps = parseInt(ci.recent_apps)||0;
+
+      // Score
+      let crScore = bankrupt?0: defaults?0: late>=3||apps>=5?8: late>=1?20: 35;
+      const dsr = income>0?(commits/income)*100:100;
+      const dsrScore = dsr<=50?40:dsr<=60?30:dsr<=70?12:0;
+      const yrs = parseFloat(document.getElementById('empYears').value)||0;
+      const et = document.getElementById('empType').value;
+      const empScore = et==='government'?(yrs>=5?15:12):et==='salaried'?(yrs>=2?12:8):yrs>=2?6:3;
+      const incScore = income>=5000?10:income>=3000?7:3;
+      const total = bankrupt?0: Math.max(0,Math.min(100,dsrScore+crScore+empScore+incScore));
+
+      const color = bankrupt?'red':total<=35?'red':total<=55?'orange':total<=70?'yellow':'green';
+      const rating = bankrupt?'Not Eligible':total<=35?'Poor':total<=55?'Weak':total<=70?'Fair':total<=85?'Good':'Strong';
+
+      document.getElementById('stepUpload').style.display='none';
+      document.getElementById('stepResult').style.display='block';
+      document.getElementById('scoreCircle').className='score-circle '+color;
+      document.getElementById('scoreNum').textContent=total;
+      document.getElementById('ratingBadge').textContent=rating;
+      document.getElementById('ratingBadge').className='rating-badge '+color;
+
+      const icons={dsr:'📉',credit:'📊',employment:'💼',income:'💰'};
+      document.getElementById('bdContainer').innerHTML = [
+        {k:'dsr',l:'Debt Service Ratio',s:dsrScore,m:40,v:dsr,d:dsr.toFixed(1)+'%'},
+        {k:'credit',l:'Credit Record',s:crScore,m:35,d:'Late:'+late+' Defaults:'+defaults},
+        {k:'employment',l:'Employment',s:empScore,m:15,d:et+' '+yrs+'yr '+employer},
+        {k:'income',l:'Income Level',s:incScore,m:10,v:income,d:'RM '+income.toLocaleString()}
+      ].map(x=>{const p=x.s/x.m*100;const fc=p<40?'low':p<70?'mid':'high';
+        return`<div class="breakdown-item"><div class="b-icon">${icons[x.k]}</div><div class="b-info"><div class="b-name">${x.l}</div><div class="b-detail">${x.d}</div><div class="bar-wrap"><div class="bar-fill ${fc}" style="width:${p}%"></div></div></div><div class="b-score">${x.s}<span class="b-max">/${x.m}</span></div></div>`}).join('');
+
+      if(bankrupt) document.getElementById('bdContainer').innerHTML+='<div style="background:#7f1d1d;color:#fca5a5;padding:16px;border-radius:10px;text-align:center;margin-top:12px;font-weight:700">⚠️ Bankruptcy — not eligible</div>';
+    } catch(e) {
+      toast('❌ '+e.message,true);
     }
-
-    btn.disabled = false;
-    btn.textContent = 'Calculate My Score';
+    btn.disabled=false; btn.textContent='Calculate My Score';
   }
 
-  function showResult(data) {
-    document.getElementById('stepUpload').style.display = 'none';
-    document.getElementById('stepResult').style.display = 'block';
-
-    const score = data.score;
-    const color = data.rating_color;
-    const circle = document.getElementById('scoreCircle');
-    circle.className = 'score-circle ' + color;
-    document.getElementById('scoreNum').textContent = score;
-
-    const badge = document.getElementById('ratingBadge');
-    badge.textContent = data.rating;
-    badge.className = 'rating-badge ' + color;
-
-    // Breakdown
-    const bd = data.breakdown;
-    const container = document.getElementById('breakdownContainer');
-    const icons = {dsr:'📉', credit:'📊', employment:'💼', income:'💰'};
-
-    container.innerHTML = Object.entries(bd).map(([key, item]) => {
-      const pct = item.max > 0 ? (item.score / item.max * 100) : 0;
-      const fillClass = pct < 40 ? 'low' : pct < 70 ? 'mid' : 'high';
-      return `
-        <div class="breakdown-item">
-          <div class="b-icon">${icons[key] || '•'}</div>
-          <div class="b-info">
-            <div class="b-name">${item.label}</div>
-            <div class="b-detail">${item.details || (item.value !== undefined ? 'RM ' + Number(item.value).toLocaleString() : '')}</div>
-            <div class="bar-wrap"><div class="bar-fill ${fillClass}" style="width:${pct}%"></div></div>
-          </div>
-          <div class="b-score">${item.score}<span class="b-max">/${item.max}</span></div>
-        </div>`;
-    }).join('');
-
-    if (data.bankrupt) {
-      container.innerHTML += `
-        <div style="background:#7f1d1d;color:#fca5a5;padding:16px;border-radius:10px;text-align:center;margin-top:12px;font-weight:700">
-          ⚠️ Bankruptcy detected — not eligible for bank loans
-        </div>`;
-    }
-  }
-
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
 </body>
 </html>
