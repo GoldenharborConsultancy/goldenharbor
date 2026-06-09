@@ -122,101 +122,108 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-const DS_KEY = 'sk-9fcaa417162c444e8abb95a4c27a8afe';
-const DS_URL = 'https://api.deepseek.com/v1/chat/completions';
-let files = {}, loanType = '';
-function switchTab(t){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+t).classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.querySelector('.nav-item[data-page="'+t+'"]').classList.add('active')}
-function selectType(t,el){loanType=t;document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');document.getElementById('selLabel').textContent=t;document.getElementById('stepType').style.display='none';document.getElementById('stepUpload').style.display='block';document.getElementById('stepResult').style.display='none'}
-function backToType(){document.getElementById('stepType').style.display='block';document.getElementById('stepUpload').style.display='none';document.getElementById('stepResult').style.display='none'}
-function backToUpload(){document.getElementById('stepUpload').style.display='block';document.getElementById('stepResult').style.display='none'}
-function fileReady(i,k,b){if(i.files[0]){files[k]=i.files[0];document.getElementById(b).classList.add('uploaded');document.getElementById(b).querySelector('.u-file').textContent=i.files[0].name}}
-function toast(m,e){const t=document.getElementById('toast');t.textContent=m;t.className='toast'+(e?' error':'')+' show';setTimeout(()=>t.classList.remove('show'),3500)}
-async function extractPDFText(file) {
-const data = await file.arrayBuffer();
-const pdf = await pdfjsLib.getDocument({data}).promise;
-let text = '';
-for (let i = 1; i <= pdf.numPages; i++) {
-const page = await pdf.getPage(i);
-const content = await page.getTextContent();
-text += content.items.map(item => item.str).join(' ') + '\n';
-}
-return text.trim() || 'No text found in PDF';
-}
-async function callDS(system, userText) {
-const resp = await fetch(DS_URL, {
-method: 'POST',
-headers: {'Content-Type':'application/json','Authorization':'Bearer '+DS_KEY},
-body: JSON.stringify({model:'deepseek-v4-flash',messages:[{role:'system',content:system},{role:'user',content:userText.slice(0,8000)}],temperature:0,max_tokens:300,thinking:{type:'disabled'}})
-});
-const data = await resp.json();
-if (!resp.ok) throw new Error(data.error?.message || 'API error');
-return data.choices[0].message.content.trim();
-}
-async function calculate() {
-if (!files.payslip||!files.bank||!files.ctos) return toast('Upload all 3 PDFs',true);
-const btn = document.getElementById('calcBtn');
-btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Reading PDFs...';
-try {
-const pt = await extractPDFText(files.payslip);
-const bt = await extractPDFText(files.bank);
-const ct = await extractPDFText(files.ctos);
-if (!pt&&!bt&&!ct) throw new Error('Could not read PDFs. Use digital PDFs, not scanned images.');
-btn.innerHTML = '<span class="spinner"></span> Analyzing...';
-const [pr, br, cr] = await Promise.all([
-callDS('Extract net monthly salary (RM) and employer name. Return ONLY JSON: {"income":number,"employer":"name"}', pt),
-callDS('Sum monthly loan commitments (hire purchase, housing, personal, PTPTN). For credit cards use 5% minimum payment. Ignore groceries, fuel, utilities, ATM, insurance, transfers, shopping, food. Return ONLY JSON: {"commitments":number}', bt),
-callDS('Analyze CTOS/CCRIS: bankrupt? defaults? late payment count? recent applications? Return ONLY JSON: {"bankrupt":bool,"defaults":bool,"late_count":number,"recent_apps":number}', ct)
-]);
-const pi = JSON.parse((pr.match(/\{[\s\S]*\}/)||[pr])[0]);
-const bi = JSON.parse((br.match(/\{[\s\S]*\}/)||[br])[0]);
-const ci = JSON.parse((cr.match(/\{[\s\S]*\}/)||[cr])[0]);
-const income = parseFloat(pi.income)||0;
-const employer = pi.employer||'';
-const commits = parseFloat(bi.commitments)||0;
-const warnings = [];
-if (income < 500) warnings.push('Could not find income in payslip');
-if (commits < 50) warnings.push('Could not find loan payments in bank statement');
-if (!pt || pt.length < 20) warnings.push('Payslip PDF appears empty');
-if (!bt || bt.length < 20) warnings.push('Bank statement PDF appears empty');
-if (!ct || ct.length < 20) warnings.push('CTOS PDF appears empty');
-if (income > 500 && commits < 50) warnings.push('Bank statement shows no loan payments. Check file is correct.');
-if (warnings.length >= 2 || (income > 500 && commits < 50)) throw new Error('Unable to calculate score:\\n' + warnings.join('\\n'));
-const bankrupt = ci.bankrupt||false;
-const defaults = ci.defaults||false;
-const late = parseInt(ci.late_count)||0;
-const apps = parseInt(ci.recent_apps)||0;
-let crScore = bankrupt?0: defaults?0: late>=3||apps>=5?8: late>=1?20: 35;
-const dsr = income>0?(commits/income)*100:100;
-const dsrScore = dsr<=50?40:dsr<=60?30:dsr<=70?12:0;
-const yrs = Math.max(0, Math.min(50, parseFloat(document.getElementById('empYears').value)||0));
-const et = document.getElementById('empType').value;
-const empScore = et==='government'?(yrs>=5?15:12):et==='salaried'?(yrs>=2?12:8):yrs>=2?6:3;
-const incScore = income>=5000?10:income>=3000?7:3;
-const total = bankrupt?0: Math.max(0,Math.min(100,dsrScore+crScore+empScore+incScore));
-const color = bankrupt?'red':total<=35?'red':total<=55?'orange':total<=70?'yellow':'green';
-const rating = bankrupt?'Not Eligible':total<=35?'Poor':total<=55?'Weak':total<=70?'Fair':total<=85?'Good':'Strong';
-document.getElementById('stepUpload').style.display='none';
-document.getElementById('stepResult').style.display='block';
-document.getElementById('scoreCircle').className='score-circle '+color;
-document.getElementById('scoreNum').textContent=total;
-document.getElementById('ratingBadge').textContent=rating;
-document.getElementById('ratingBadge').className='rating-badge '+color;
-const icons={dsr:'📉',credit:'📊',employment:'💼',income:'💰'};
-document.getElementById('bdContainer').innerHTML = [
-{k:'dsr',l:'Debt Service Ratio',s:dsrScore,m:40,v:dsr,d:dsr.toFixed(1)+'%'},
-{k:'credit',l:'Credit Record',s:crScore,m:35,d:'Late:'+late+' Defaults:'+defaults},
-{k:'employment',l:'Employment',s:empScore,m:15,d:et+' '+yrs+'yr '+employer},
-{k:'income',l:'Income Level',s:incScore,m:10,v:income,d:'RM '+income.toLocaleString()}
-].map(x=>{const p=x.s/x.m*100;const fc=p<40?'low':p<70?'mid':'high';
-return'<div class="breakdown-item"><div class="b-icon">'+icons[x.k]+'</div><div class="b-info"><div class="b-name">'+x.l+'</div><div class="b-detail">'+x.d+'</div><div class="bar-wrap"><div class="bar-fill '+fc+'" style="width:'+p+'%"></div></div></div><div class="b-score">'+x.s+'<span class="b-max">/'+x.m+'</span></div></div>'}).join('');
-if(bankrupt) document.getElementById('bdContainer').innerHTML+='<div style="background:#7f1d1d;color:#fca5a5;padding:16px;border-radius:10px;text-align:center;margin-top:12px;font-weight:700">⚠️ Bankruptcy — not eligible</div>';
-} catch(e) {
-toast('❌ '+e.message,true);
-}
-btn.disabled=false; btn.textContent='Calculate My Score';
-}
-if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const DS_KEY = 'sk-9fcaa417162c444e8abb95a4c27a8afe';
+  const DS_URL = 'https://api.deepseek.com/v1/chat/completions';
+
+  let files = {}, loanType = '';
+
+  function switchTab(t){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+t).classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.querySelector('.nav-item[data-page="'+t+'"]').classList.add('active')}
+  function selectType(t,el){loanType=t;document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');document.getElementById('selLabel').textContent=t;document.getElementById('stepType').style.display='none';document.getElementById('stepUpload').style.display='block';document.getElementById('stepResult').style.display='none'}
+  function backToType(){document.getElementById('stepType').style.display='block';document.getElementById('stepUpload').style.display='none';document.getElementById('stepResult').style.display='none'}
+  function backToUpload(){document.getElementById('stepUpload').style.display='block';document.getElementById('stepResult').style.display='none'}
+  function fileReady(i,k,b){if(i.files[0]){files[k]=i.files[0];document.getElementById(b).classList.add('uploaded');document.getElementById(b).querySelector('.u-file').textContent=i.files[0].name}}
+  function toast(m,e){const t=document.getElementById('toast');t.textContent=m;t.className='toast'+(e?' error':'')+' show';setTimeout(()=>t.classList.remove('show'),3500)}
+
+  async function extractPDFText(file) {
+    const data = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({data}).promise;
+    let text = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text += content.items.map(item => item.str).join(' ') + '\n';
+    }
+    return text.trim() || 'No text found in PDF';
+  }
+
+  async function callDS(system, userText) {
+    const resp = await fetch(DS_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+DS_KEY},
+      body: JSON.stringify({model:'deepseek-v4-flash',messages:[{role:'system',content:system},{role:'user',content:userText.slice(0,8000)}],temperature:0,max_tokens:300,thinking:{type:'disabled'},response_format:{type:'json_object'}})
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error?.message || 'API error');
+    return data.choices[0].message.content.trim();
+  }
+
+  async function calculate() {
+    if (!files.payslip||!files.bank||!files.ctos) return toast('Upload all 3 PDFs',true);
+    const btn = document.getElementById('calcBtn');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Reading PDFs...';
+    try {
+      const pt = await extractPDFText(files.payslip);
+      const bt = await extractPDFText(files.bank);
+      const ct = await extractPDFText(files.ctos);
+      if (!pt&&!bt&&!ct) throw new Error('Could not read PDFs. Use digital PDFs, not scanned images.');
+      btn.innerHTML = '<span class="spinner"></span> Analyzing...';
+      const [pr, br, cr] = await Promise.all([
+        callDS('Extract net monthly salary (RM) and employer name. Return ONLY JSON: {"income":number,"employer":"name"}', pt),
+        callDS('Sum monthly loan commitments (hire purchase, housing, personal, PTPTN). For credit cards use 5% minimum payment. Ignore groceries, fuel, utilities, ATM, insurance, transfers, shopping, food. Return ONLY JSON: {"commitments":number}', bt),
+        callDS('Analyze CTOS/CCRIS: bankrupt? defaults? late payment count? recent applications? Return ONLY JSON: {"bankrupt":bool,"defaults":bool,"late_count":number,"recent_apps":number}', ct)
+      ]);
+      const pi = JSON.parse((pr.match(/\{[\s\S]*\}/)||[pr])[0]);
+      const bi = JSON.parse((br.match(/\{[\s\S]*\}/)||[br])[0]);
+      const ci = JSON.parse((cr.match(/\{[\s\S]*\}/)||[cr])[0]);
+      const income = parseFloat(pi.income)||0;
+      const employer = pi.employer||'';
+      const commits = parseFloat(bi.commitments)||0;
+      const warnings = [];
+      if (income < 500) warnings.push('Could not find income in payslip');
+      if (commits < 50) warnings.push('Could not find loan payments in bank statement');
+      if (!pt || pt.length < 20) warnings.push('Payslip PDF appears empty');
+      if (!bt || bt.length < 20) warnings.push('Bank statement PDF appears empty');
+      if (!ct || ct.length < 20) warnings.push('CTOS PDF appears empty');
+      if (income > 500 && commits < 50) warnings.push('Bank statement shows no loan payments. Check file is correct.');
+      if (warnings.length >= 2 || (income > 500 && commits < 50)) throw new Error('Unable to calculate score:\\n' + warnings.join('\\n'));
+      const bankrupt = ci.bankrupt||false;
+      const defaults = ci.defaults||false;
+      const late = parseInt(ci.late_count)||0;
+      const apps = parseInt(ci.recent_apps)||0;
+      let crScore = bankrupt?0: defaults?0: late>=3||apps>=5?8: late>=1?20: 35;
+      const dsr = income>0?(commits/income)*100:100;
+      const dsrScore = dsr<=50?40:dsr<=60?30:dsr<=70?12:0;
+      const yrs = Math.max(0, Math.min(50, parseFloat(document.getElementById('empYears').value)||0));
+      const et = document.getElementById('empType').value;
+      const empScore = et==='government'?(yrs>=5?15:12):et==='salaried'?(yrs>=2?12:8):yrs>=2?6:3;
+      const incScore = income>=5000?10:income>=3000?7:3;
+      const total = bankrupt?0: Math.max(0,Math.min(100,dsrScore+crScore+empScore+incScore));
+      const color = bankrupt?'red':total<=35?'red':total<=55?'orange':total<=70?'yellow':'green';
+      const rating = bankrupt?'Not Eligible':total<=35?'Poor':total<=55?'Weak':total<=70?'Fair':total<=85?'Good':'Strong';
+      document.getElementById('stepUpload').style.display='none';
+      document.getElementById('stepResult').style.display='block';
+      document.getElementById('scoreCircle').className='score-circle '+color;
+      document.getElementById('scoreNum').textContent=total;
+      document.getElementById('ratingBadge').textContent=rating;
+      document.getElementById('ratingBadge').className='rating-badge '+color;
+      const icons={dsr:'📉',credit:'📊',employment:'💼',income:'💰'};
+      document.getElementById('bdContainer').innerHTML = [
+        {k:'dsr',l:'Debt Service Ratio',s:dsrScore,m:40,v:dsr,d:dsr.toFixed(1)+'%'},
+        {k:'credit',l:'Credit Record',s:crScore,m:35,d:'Late:'+late+' Defaults:'+defaults},
+        {k:'employment',l:'Employment',s:empScore,m:15,d:et+' '+yrs+'yr '+employer},
+        {k:'income',l:'Income Level',s:incScore,m:10,v:income,d:'RM '+income.toLocaleString()}
+      ].map(x=>{const p=x.s/x.m*100;const fc=p<40?'low':p<70?'mid':'high';
+        return'<div class="breakdown-item"><div class="b-icon">'+icons[x.k]+'</div><div class="b-info"><div class="b-name">'+x.l+'</div><div class="b-detail">'+x.d+'</div><div class="bar-wrap"><div class="bar-fill '+fc+'" style="width:'+p+'%"></div></div></div><div class="b-score">'+x.s+'<span class="b-max">/'+x.m+'</span></div></div>'}).join('');
+      if(bankrupt) document.getElementById('bdContainer').innerHTML+='<div style="background:#7f1d1d;color:#fca5a5;padding:16px;border-radius:10px;text-align:center;margin-top:12px;font-weight:700">⚠️ Bankruptcy — not eligible</div>';
+    } catch(e) {
+      toast('❌ '+e.message,true);
+    }
+    btn.disabled=false; btn.textContent='Calculate My Score';
+  }
+
+  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
+<div class="toast" id="toast"></div>
 </body>
 </html>
