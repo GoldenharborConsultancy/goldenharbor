@@ -126,9 +126,10 @@
     <button class="nav-item" data-page="contact" onclick="switchTab('contact')"><span class="nav-icon">📞</span>Contact</button>
   </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <div class="toast" id="toast"></div>
-
 <script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   const DS_URL = 'https://api.deepseek.com/v1/chat/completions';
   let dsKey = localStorage.getItem('gh_ds_key') || '';
   if (!dsKey) {
@@ -151,50 +152,15 @@
   function toast(m,e){const t=document.getElementById('toast');t.textContent=m;t.className='toast'+(e?' error':'')+' show';setTimeout(()=>t.classList.remove('show'),3500)}
 
   async function extractPDFText(file) {
-    const buf = await file.arrayBuffer();
-    const bytes = new Uint8Array(buf);
-    const str = new TextDecoder('latin1').decode(bytes);
+    const data = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({data}).promise;
     let text = '';
-
-    // Find all stream objects with their filters
-    const objRegex = /(\d+ \d+ obj[\s\S]*?endobj)/g;
-    const objects = str.match(objRegex) || [];
-
-    for (const obj of objects) {
-      // Check if this object has a stream
-      const streamMatch = obj.match(/stream\r?\n([\s\S]*?)\r?\nendstream/);
-      if (!streamMatch) continue;
-
-      const streamData = streamMatch[1];
-      const isFlate = /\/FlateDecode/.test(obj);
-      const isASCII = /\/ASCII85Decode/.test(obj);
-
-      try {
-        let decoded = streamData;
-        if (isFlate) {
-          // Use browser's built-in DecompressionStream for FlateDecode
-          const compressed = new Uint8Array([...streamData].map(c => c.charCodeAt(0)));
-          const ds = new DecompressionStream('deflate');
-          const writer = ds.writable.getWriter();
-          writer.write(compressed);
-          writer.close();
-          const result = await new Response(ds.readable).arrayBuffer();
-          decoded = new TextDecoder().decode(result);
-        }
-
-        // Extract text from BT/ET blocks in decoded stream
-        const btBlocks = decoded.match(/BT[\s\S]*?ET/g) || [];
-        for (const bt of btBlocks) {
-          const tj = bt.match(/\((.*?)\)/g) || [];
-          text += tj.map(t => t.slice(1, -1)).join(' ') + '\n';
-        }
-
-        // Also try Tj operator
-        const tjAll = decoded.match(/\((.*?)\)\s*Tj/g) || [];
-        text += tjAll.map(t => t.match(/\((.*?)\)/)[1]).join(' ') + '\n';
-      } catch(e) {}
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text += content.items.map(item => item.str).join(' ') + '\n';
     }
-    return text.trim() || 'No readable text found. Ensure this is a digital PDF, not a scanned image.';
+    return text.trim() || 'No text found in PDF';
   }
 
   async function callDS(system, userText) {
