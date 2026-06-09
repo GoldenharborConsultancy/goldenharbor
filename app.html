@@ -159,34 +159,44 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
   }
 
   async function calculate() {
-    if (!files.payslip||!files.bank||!files.ctos) return toast('Upload all 3 PDFs',true);
+    if (!files.payslip||!files.bank) return toast('Upload payslip and bank statement',true);
     const btn = document.getElementById('calcBtn');
     btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Reading PDFs...';
     try {
       const pt = await extractPDFText(files.payslip);
       const bt = await extractPDFText(files.bank);
-      const ct = await extractPDFText(files.ctos);
-      if (!pt&&!bt&&!ct) throw new Error('Could not read PDFs. Use digital PDFs, not scanned images.');
-      btn.innerHTML = '<span class="spinner"></span> Analyzing...';
-      const [pr, br, cr] = await Promise.all([
-        callDS('Extract net monthly salary (RM) and employer name. Return ONLY JSON: {"income":number,"employer":"name"}', pt),
-        callDS('Sum monthly loan commitments (hire purchase, housing, personal, PTPTN). For credit cards use 5% minimum payment. Ignore groceries, fuel, utilities, ATM, insurance, transfers, shopping, food. Return ONLY JSON: {"commitments":number}', bt),
-        callDS('Analyze CTOS/CCRIS: bankrupt? defaults? late payment count? recent applications? Return ONLY JSON: {"bankrupt":bool,"defaults":bool,"late_count":number,"recent_apps":number}', ct)
+      if (!pt && !bt) throw new Error('Could not read PDFs. Use digital PDFs, not scanned images.');
+      if (pt.length < 50) throw new Error('Payslip appears empty or unreadable');
+      if (bt.length < 100) throw new Error('Bank statement appears empty or unreadable');
+      btn.innerHTML = '<span class="spinner"></span> Verifying...';
+      const [pr, br] = await Promise.all([
+        callDS('Extract: full name, net monthly salary (RM), employer name. Return ONLY JSON: {"name":"FULL NAME","income":number,"employer":"name"}', pt),
+        callDS('Extract: account holder full name, total monthly loan commitments (all loans: housing, car, personal, PTPTN). For credit cards use 5% of outstanding. Ignore: groceries, fuel, dining, utilities, ATM, insurance, transfers, shopping, WiFi, telco, entertainment, food delivery. Return ONLY JSON: {"name":"FULL NAME","commitments":number}', bt)
       ]);
       const pi = JSON.parse((pr.match(/\{[\s\S]*\}/)||[pr])[0]);
       const bi = JSON.parse((br.match(/\{[\s\S]*\}/)||[br])[0]);
-      const ci = JSON.parse((cr.match(/\{[\s\S]*\}/)||[cr])[0]);
+      // Name verification
+      const clean = n => (n||'').toUpperCase().replace(/[^A-Z ]/g,'').trim();
+      const pn = clean(pi.name), bn = clean(bi.name);
+      if (pn && bn && pn !== bn) {
+        const shares = (a,b) => {const wa=a.split(' ').filter(w=>w.length>1), wb=b.split(' '); return wa.filter(w=>wb.includes(w)).length >= Math.min(2,wa.length);};
+        if (!shares(pn,bn) && !shares(bn,pn))
+          throw new Error('Name mismatch. Payslip: '+pn+', Bank: '+bn+'. Check files.');
+      }
       const income = parseFloat(pi.income)||0;
       const employer = pi.employer||'';
       const commits = parseFloat(bi.commitments)||0;
-      const warnings = [];
-      if (income < 500) warnings.push('Could not find income in payslip');
-      if (commits < 50) warnings.push('Could not find loan payments in bank statement');
-      if (!pt || pt.length < 20) warnings.push('Payslip PDF appears empty');
-      if (!bt || bt.length < 20) warnings.push('Bank statement PDF appears empty');
-      if (!ct || ct.length < 20) warnings.push('CTOS PDF appears empty');
-      if (income > 500 && commits < 50) warnings.push('Bank statement shows no loan payments. Check file is correct.');
-      if (warnings.length >= 2 || (income > 500 && commits < 50)) throw new Error('Unable to calculate score:\\n' + warnings.join('\\n'));
+      // CTOS: optional
+      let ci = {bankrupt:false,defaults:false,late_count:0,recent_apps:0};
+      if (files.ctos) {
+        btn.innerHTML = '<span class="spinner"></span> Credit report...';
+        const ct = await extractPDFText(files.ctos);
+        if (ct && ct.length > 20) {
+          const cr = await callDS('Analyze CTOS/CCRIS: bankrupt? defaults? late payment count? recent applications? Return ONLY JSON: {"bankrupt":bool,"defaults":bool,"late_count":number,"recent_apps":number}', ct);
+          ci = JSON.parse((cr.match(/\{[\s\S]*\}/)||[cr])[0]);
+        }
+      }
+      btn.innerHTML = '<span class="spinner"></span> Calculating...';
       const bankrupt = ci.bankrupt||false;
       const defaults = ci.defaults||false;
       const late = parseInt(ci.late_count)||0;
@@ -215,9 +225,9 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
         {k:'income',l:'Income Level',s:incScore,m:10,v:income,d:'RM '+income.toLocaleString()}
       ].map(x=>{const p=x.s/x.m*100;const fc=p<40?'low':p<70?'mid':'high';
         return'<div class="breakdown-item"><div class="b-icon">'+icons[x.k]+'</div><div class="b-info"><div class="b-name">'+x.l+'</div><div class="b-detail">'+x.d+'</div><div class="bar-wrap"><div class="bar-fill '+fc+'" style="width:'+p+'%"></div></div></div><div class="b-score">'+x.s+'<span class="b-max">/'+x.m+'</span></div></div>'}).join('');
-      if(bankrupt) document.getElementById('bdContainer').innerHTML+='<div style="background:#7f1d1d;color:#fca5a5;padding:16px;border-radius:10px;text-align:center;margin-top:12px;font-weight:700">⚠️ Bankruptcy — not eligible</div>';
+      if(bankrupt) document.getElementById('bdContainer').innerHTML+='<div style="background:#7f1d1d;color:#fca5a5;padding:16px;border-radius:10px;text-align:center;margin-top:12px;font-weight:700">Bankruptcy — not eligible</div>';
     } catch(e) {
-      toast('❌ '+e.message,true);
+      toast(e.message,true);
     }
     btn.disabled=false; btn.textContent='Calculate My Score';
   }
