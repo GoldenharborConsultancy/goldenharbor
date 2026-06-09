@@ -207,9 +207,9 @@
         callDS('Analyze CTOS/CCRIS: bankrupt? defaults? late payment count? recent applications? Return ONLY JSON: {"bankrupt":bool,"defaults":bool,"late_count":number,"recent_apps":number}', ct)
       ]);
 
-      const pi = JSON.parse(pr.match(/\{[^}]+\}/)?.[0]||pr);
-      const bi = JSON.parse(br.match(/\{[^}]+\}/)?.[0]||br);
-      const ci = JSON.parse(cr.match(/\{[^}]+\}/)?.[0]||cr);
+      const pi = JSON.parse((pr.match(/\{[\s\S]*\}/)||[pr])[0]);
+      const bi = JSON.parse((br.match(/\{[\s\S]*\}/)||[br])[0]);
+      const ci = JSON.parse((cr.match(/\{[\s\S]*\}/)||[cr])[0]);
 
       const income = parseFloat(pi.income)||0;
       const employer = pi.employer||'';
