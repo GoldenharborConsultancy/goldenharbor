@@ -130,17 +130,8 @@
 <div class="toast" id="toast"></div>
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  const DS_URL = 'https://api.deepseek.com/v1/chat/completions';
-  let dsKey = localStorage.getItem('gh_ds_key') || '';
-  if (!dsKey) {
-    dsKey = prompt('Enter your DeepSeek API key (stored locally):');
-    if (dsKey) localStorage.setItem('gh_ds_key', dsKey);
-  }
-  function getDSKey() {
-    if (!dsKey) dsKey = localStorage.getItem('gh_ds_key') || '';
-    if (!dsKey) { dsKey = prompt('API key required:'); if (dsKey) localStorage.setItem('gh_ds_key', dsKey); }
-    return dsKey;
-  }
+  const DS_KEY = 'sk-9fcaa417162c444e8abb95a4c27a8afe';
+
 
   let files = {}, loanType = '';
 
@@ -166,7 +157,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
   async function callDS(system, userText) {
     const resp = await fetch(DS_URL, {
       method: 'POST',
-      headers: {'Content-Type':'application/json','Authorization':'Bearer '+getDSKey()},
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+DS_KEY},
       body: JSON.stringify({model:'deepseek-v4-flash',messages:[{role:'system',content:system},{role:'user',content:userText.slice(0,8000)}],temperature:0,max_tokens:300,thinking:{type:'disabled'}})
     });
     const data = await resp.json();
