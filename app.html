@@ -1,251 +1,252 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Golden Harbor — Loan Score</title>
-  <meta name="theme-color" content="#0f172a" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;min-height:100dvh;display:flex;justify-content:center;-webkit-tap-highlight-color:transparent}
-    .app{width:100%;max-width:480px;display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
-    .topbar{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #1e293b}
-    .topbar .logo{font-weight:800;font-size:16px;color:#e2b54b}
-    .page{display:none;flex:1;padding:20px;overflow-y:auto}
-    .page.active{display:block}
-    .back-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px}
-    .back-btn{background:none;border:none;color:#e2b54b;font-size:22px;cursor:pointer;padding:0 4px;line-height:1}
-    .type-cards{display:grid;gap:12px;margin-bottom:20px}
-    .type-card{background:#1e293b;border:2px solid #334155;border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all .2s}
-    .type-card.selected{border-color:#e2b54b;background:#1a2744}
-    .type-card .t-icon{font-size:36px;margin-bottom:8px}
-    .type-card .t-name{font-weight:700;font-size:16px}
-    .type-card .t-desc{font-size:12px;color:#94a3b8;margin-top:4px}
-    .upload-box{background:#1e293b;border:2px dashed #334155;border-radius:14px;padding:24px;text-align:center;cursor:pointer;margin-bottom:12px;position:relative}
-    .upload-box.uploaded{border-color:#22c55e;border-style:solid}
-    .upload-box .u-icon{font-size:32px;margin-bottom:8px}
-    .upload-box .u-label{font-weight:600;font-size:14px}
-    .upload-box .u-hint{font-size:11px;color:#64748b;margin-top:4px}
-    .upload-box .u-file{font-size:12px;color:#22c55e;margin-top:4px}
-    .upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
-    .form-group{margin-bottom:14px}
-    .form-group label{display:block;font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:4px;text-transform:uppercase}
-    .form-group input,.form-group select{width:100%;padding:14px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#e2e8f0;font-size:15px;font-family:'Inter',sans-serif;outline:none}
-    .form-group input:focus,.form-group select:focus{border-color:#e2b54b}
-    .form-group select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
-    .btn{display:inline-block;padding:14px 28px;border-radius:12px;font-weight:700;font-size:14px;text-decoration:none;cursor:pointer;border:none;font-family:'Inter',sans-serif;text-align:center}
-    .btn-gold{background:linear-gradient(135deg,#e2b54b,#c9952e);color:#0f172a}.btn-gold:disabled{opacity:.5}
-    .btn-full{width:100%;padding:16px}
-    .btn-outline{background:transparent;color:#e2b54b;border:1px solid #334155}
-    .score-circle{width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;margin:20px auto;border:4px solid #334155}
-    .score-circle .num{font-size:42px;font-weight:800}.score-circle .label{font-size:12px;color:#94a3b8}
-    .score-circle.red{border-color:#dc2626}.score-circle.orange{border-color:#f97316}.score-circle.yellow{border-color:#eab308}.score-circle.green{border-color:#22c55e}
-    .rating-badge{display:inline-block;padding:6px 16px;border-radius:20px;font-weight:700;font-size:14px;text-align:center;margin:0 auto 20px}
-    .rating-badge.red{background:#7f1d1d;color:#fca5a5}.rating-badge.orange{background:#7c2d12;color:#fdba74}.rating-badge.yellow{background:#713f12;color:#fde047}.rating-badge.green{background:#14532d;color:#86efac}
-    .breakdown-item{display:flex;align-items:center;gap:12px;padding:14px;background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:8px}
-    .breakdown-item .b-icon{font-size:22px}.breakdown-item .b-info{flex:1}
-    .breakdown-item .b-name{font-size:13px;font-weight:600}.breakdown-item .b-detail{font-size:11px;color:#64748b}
-    .breakdown-item .b-score{font-weight:700;font-size:16px;text-align:right}.breakdown-item .b-max{font-size:11px;color:#64748b}
-    .bar-wrap{height:6px;background:#334155;border-radius:3px;margin-top:4px}
-    .bar-fill{height:100%;border-radius:3px;background:#e2b54b;transition:width .5s}
-    .bar-fill.low{background:#dc2626}.bar-fill.mid{background:#eab308}.bar-fill.high{background:#22c55e}
-    .bottom-nav{display:flex;background:#1e293b;border-top:1px solid #334155;position:sticky;bottom:0}
-    .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px;color:#64748b;font-size:11px;cursor:pointer;gap:3px;border:none;background:none;font-family:'Inter',sans-serif}
-    .nav-item.active{color:#e2b54b}.nav-item .nav-icon{font-size:19px}
-    .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#22c55e;color:#fff;padding:12px 24px;border-radius:12px;font-weight:600;z-index:999;opacity:0;pointer-events:none;transition:opacity .3s}
-    .toast.show{opacity:1}.toast.error{background:#dc2626}
-    .spinner{display:inline-block;width:20px;height:20px;border:2px solid #0f172a;border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:8px}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .disclaimer{font-size:11px;color:#64748b;text-align:center;margin-top:12px}
-    @media(min-width:481px){.app{border-left:1px solid #1e293b;border-right:1px solid #1e293b}}
-  </style>
-</head>
-<body>
-<div class="app">
-  <div class="topbar"><div class="logo">⚓ Golden Harbor<span style="color:#94a3b8;font-weight:400;font-size:12px;margin-left:6px">Loan Score</span></div></div>
-
-  <!-- Score Tab -->
-  <div class="page active" id="page-score">
-    <div id="stepType">
-      <p style="font-size:13px;color:#94a3b8;margin-bottom:12px">What type of loan?</p>
-      <div class="type-cards">
-        <div class="type-card" onclick="selectType('Personal Loan',this)"><div class="t-icon">👤</div><div class="t-name">Personal Loan</div><div class="t-desc">For salaried individuals</div></div>
-        <div class="type-card" onclick="selectType('SME Business Loan',this)"><div class="t-icon">🏢</div><div class="t-name">SME / Business Loan</div><div class="t-desc">For business owners</div></div>
-        <div class="type-card" onclick="selectType('Housing Loan',this)"><div class="t-icon">🏠</div><div class="t-name">Housing Loan</div><div class="t-desc">For home buyers</div></div>
-      </div>
-    </div>
-
-    <div id="stepUpload" style="display:none">
-      <div class="back-bar"><button class="back-btn" onclick="backToType()">←</button><span style="font-weight:700" id="selLabel">Personal Loan</span></div>
-      <p style="font-size:12px;color:#94a3b8;margin-bottom:16px">Upload 3 PDFs — payslip, bank statement, CTOS report</p>
-      <div class="upload-box" id="boxPayslip"><div class="u-icon">💰</div><div class="u-label">Payslip</div><div class="u-hint">Latest month (PDF)</div><div class="u-file"></div><input type="file" accept=".pdf" onchange="fileReady(this,'payslip','boxPayslip')"></div>
-      <div class="upload-box" id="boxBank"><div class="u-icon">🏦</div><div class="u-label">Bank Statement</div><div class="u-hint">Latest 1-3 months (PDF)</div><div class="u-file"></div><input type="file" accept=".pdf" onchange="fileReady(this,'bank','boxBank')"></div>
-      <div class="upload-box" id="boxCTOS"><div class="u-icon">📊</div><div class="u-label">CTOS / CCRIS Report</div><div class="u-hint">Latest report (PDF)</div><div class="u-file"></div><input type="file" accept=".pdf" onchange="fileReady(this,'ctos','boxCTOS')"></div>
-      <div class="form-group"><label>Employment Type</label><select id="empType"><option value="salaried">Salaried</option><option value="government">Government / GLC</option><option value="self-employed">Self-Employed</option></select></div>
-      <div class="form-group"><label>Years at Current Job</label><input type="number" id="empYears" placeholder="e.g. 3.5" min="0" max="50" step="0.5"></div>
-      <button class="btn btn-gold btn-full" id="calcBtn" onclick="calculate()">Calculate My Score</button>
-      <p class="disclaimer">Analysis by AI. This is an estimate, not a guarantee.</p>
-    </div>
-
-    <div id="stepResult" style="display:none">
-      <div class="back-bar"><button class="back-btn" onclick="backToUpload()">←</button><span style="font-weight:700">Your Score</span></div>
-      <div class="score-circle" id="scoreCircle"><div class="num" id="scoreNum">--</div><div class="label">out of 100</div></div>
-      <div style="text-align:center"><span class="rating-badge" id="ratingBadge">--</span></div>
-      <div style="margin-bottom:8px;font-size:13px;font-weight:600">Breakdown</div>
-      <div id="bdContainer"></div>
-      <div style="margin-top:20px;text-align:center"><p style="font-size:14px;color:#cbd5e1;margin-bottom:12px">Want us to help improve your score?</p><a href="https://wa.me/60146326569" class="btn btn-gold btn-full">📱 WhatsApp Us</a></div>
-      <button class="btn btn-outline btn-full" style="margin-top:10px" onclick="backToType()">Try Another Loan Type</button>
-    </div>
-  </div>
-
-  <!-- Docs Tab -->
-  <div class="page" id="page-docs">
-    <div class="back-bar"><button class="back-btn" onclick="switchTab('score')">←</button><h2 style="font-size:18px;margin:0">Documents</h2></div>
-    <p style="font-size:12px;color:#94a3b8;margin-bottom:16px">Checklist for your application</p>
-    <div style="font-size:12px;font-weight:600;color:#64748b;margin:12px 0 8px">Personal Loan</div>
-    <div style="padding:12px;background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:6px;font-size:13px">🪪 IC (front & back)</div>
-    <div style="padding:12px;background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:6px;font-size:13px">💰 Payslip (3 months)</div>
-    <div style="padding:12px;background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:6px;font-size:13px">🏦 Bank Statement (6 months)</div>
-    <div style="padding:12px;background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:6px;font-size:13px">📈 EPF Statement</div>
-    <div style="padding:12px;background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:6px;font-size:13px">📊 CTOS / CCRIS Report</div>
-  </div>
-
-  <!-- Contact Tab -->
-  <div class="page" id="page-contact">
-    <div class="back-bar"><button class="back-btn" onclick="switchTab('score')">←</button><h2 style="font-size:18px;margin:0">Contact</h2></div>
-    <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:16px;margin-bottom:12px"><h4 style="margin-bottom:4px">📱 WhatsApp</h4><p style="font-size:13px;color:#94a3b8">+60 14-632 6569</p><a href="https://wa.me/60146326569" class="btn btn-gold" style="display:inline-block;margin-top:8px;padding:10px 20px;font-size:13px">Chat Now →</a></div>
-    <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:16px;margin-bottom:12px"><h4 style="margin-bottom:4px">✉️ Email</h4><p style="font-size:13px;color:#94a3b8">marcus.lim.ghb@gmail.com</p></div>
-  </div>
-
-  <div class="bottom-nav">
-    <button class="nav-item active" data-page="score" onclick="switchTab('score')"><span class="nav-icon">📊</span>Score</button>
-    <button class="nav-item" data-page="docs" onclick="switchTab('docs')"><span class="nav-icon">📄</span>Docs</button>
-    <button class="nav-item" data-page="contact" onclick="switchTab('contact')"><span class="nav-icon">📞</span>Contact</button>
-  </div>
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<div class="toast" id="toast"></div>
-<script>
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  const DS_KEY = 'sk-9fcaa417162c444e8abb95a4c27a8afe';
-
-
-  let files = {}, loanType = '';
-
-  function switchTab(t){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+t).classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.querySelector('.nav-item[data-page="'+t+'"]').classList.add('active')}
-  function selectType(t,el){loanType=t;document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');document.getElementById('selLabel').textContent=t;document.getElementById('stepType').style.display='none';document.getElementById('stepUpload').style.display='block';document.getElementById('stepResult').style.display='none'}
-  function backToType(){document.getElementById('stepType').style.display='block';document.getElementById('stepUpload').style.display='none';document.getElementById('stepResult').style.display='none'}
-  function backToUpload(){document.getElementById('stepUpload').style.display='block';document.getElementById('stepResult').style.display='none'}
-  function fileReady(i,k,b){if(i.files[0]){files[k]=i.files[0];document.getElementById(b).classList.add('uploaded');document.getElementById(b).querySelector('.u-file').textContent=i.files[0].name}}
-  function toast(m,e){const t=document.getElementById('toast');t.textContent=m;t.className='toast'+(e?' error':'')+' show';setTimeout(()=>t.classList.remove('show'),3500)}
-
-  async function extractPDFText(file) {
-    const data = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({data}).promise;
-    let text = '';
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const content = await page.getTextContent();
-      text += content.items.map(item => item.str).join(' ') + '\n';
-    }
-    return text.trim() || 'No text found in PDF';
-  }
-
-  async function callDS(system, userText) {
-    const resp = await fetch(DS_URL, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','Authorization':'Bearer '+DS_KEY},
-      body: JSON.stringify({model:'deepseek-v4-flash',messages:[{role:'system',content:system},{role:'user',content:userText.slice(0,8000)}],temperature:0,max_tokens:300,thinking:{type:'disabled'}})
-    });
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error?.message || 'API error');
-    return data.choices[0].message.content.trim();
-  }
-
-  async function calculate() {
-    if (!files.payslip||!files.bank||!files.ctos) return toast('Upload all 3 PDFs',true);
-    const btn = document.getElementById('calcBtn');
-    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Reading PDFs...';
-
-    try {
-      // Extract text
-      const pt = await extractPDFText(files.payslip);
-      const bt = await extractPDFText(files.bank);
-      const ct = await extractPDFText(files.ctos);
-      if (!pt&&!bt&&!ct) throw new Error('Could not read PDFs. Use digital PDFs, not scanned images.');
-
-      btn.innerHTML = '<span class="spinner"></span> Analyzing...';
-
-      // Call DeepSeek for each doc in parallel
-      const [pr, br, cr] = await Promise.all([
-        callDS('Extract from payslip: net monthly salary (RM) and employer name. Return ONLY JSON: {"income":number,"employer":"name"}', pt),
-        callDS('Sum monthly loan commitments (hire purchase, housing, personal, PTPTN). For credit cards use 5% minimum payment. Ignore groceries, fuel, utilities, ATM, insurance, transfers, shopping, food. Return ONLY JSON: {"commitments":number}', bt),
-        callDS('Analyze CTOS/CCRIS: bankrupt? defaults? late payment count? recent applications? Return ONLY JSON: {"bankrupt":bool,"defaults":bool,"late_count":number,"recent_apps":number}', ct)
-      ]);
-
-      const pi = JSON.parse((pr.match(/\{[\s\S]*\}/)||[pr])[0]);
-      const bi = JSON.parse((br.match(/\{[\s\S]*\}/)||[br])[0]);
-      const ci = JSON.parse((cr.match(/\{[\s\S]*\}/)||[cr])[0]);
-
-      const income = parseFloat(pi.income)||0;
-      const employer = pi.employer||'';
-      const commits = parseFloat(bi.commitments)||0;
-
-      // Validate extracted data
-      const warnings = [];
-      if (income < 500) warnings.push('Could not find income in payslip');
-      if (commits < 50) warnings.push('Could not find loan payments in bank statement');
-      if (!pt || pt.length < 20) warnings.push('Payslip PDF appears empty');
-      if (!bt || bt.length < 20) warnings.push('Bank statement PDF appears empty');
-      if (!ct || ct.length < 20) warnings.push('CTOS PDF appears empty');
-      // Income found but no commitments = likely swapped files
-      if (income > 500 && commits < 50) warnings.push('Bank statement shows no loan payments. Check file is correct.');
-      if (warnings.length >= 2 || (income > 500 && commits < 50)) throw new Error('Unable to calculate score:\\n' + warnings.join('\\n'));
-      const bankrupt = ci.bankrupt||false;
-      const defaults = ci.defaults||false;
-      const late = parseInt(ci.late_count)||0;
-      const apps = parseInt(ci.recent_apps)||0;
-
-      // Score
-      let crScore = bankrupt?0: defaults?0: late>=3||apps>=5?8: late>=1?20: 35;
-      const dsr = income>0?(commits/income)*100:100;
-      const dsrScore = dsr<=50?40:dsr<=60?30:dsr<=70?12:0;
-      const yrs = Math.max(0, Math.min(50, parseFloat(document.getElementById('empYears').value)||0));
-      const et = document.getElementById('empType').value;
-      const empScore = et==='government'?(yrs>=5?15:12):et==='salaried'?(yrs>=2?12:8):yrs>=2?6:3;
-      const incScore = income>=5000?10:income>=3000?7:3;
-      const total = bankrupt?0: Math.max(0,Math.min(100,dsrScore+crScore+empScore+incScore));
-
-      const color = bankrupt?'red':total<=35?'red':total<=55?'orange':total<=70?'yellow':'green';
-      const rating = bankrupt?'Not Eligible':total<=35?'Poor':total<=55?'Weak':total<=70?'Fair':total<=85?'Good':'Strong';
-
-      document.getElementById('stepUpload').style.display='none';
-      document.getElementById('stepResult').style.display='block';
-      document.getElementById('scoreCircle').className='score-circle '+color;
-      document.getElementById('scoreNum').textContent=total;
-      document.getElementById('ratingBadge').textContent=rating;
-      document.getElementById('ratingBadge').className='rating-badge '+color;
-
-      const icons={dsr:'📉',credit:'📊',employment:'💼',income:'💰'};
-      document.getElementById('bdContainer').innerHTML = [
-        {k:'dsr',l:'Debt Service Ratio',s:dsrScore,m:40,v:dsr,d:dsr.toFixed(1)+'%'},
-        {k:'credit',l:'Credit Record',s:crScore,m:35,d:'Late:'+late+' Defaults:'+defaults},
-        {k:'employment',l:'Employment',s:empScore,m:15,d:et+' '+yrs+'yr '+employer},
-        {k:'income',l:'Income Level',s:incScore,m:10,v:income,d:'RM '+income.toLocaleString()}
-      ].map(x=>{const p=x.s/x.m*100;const fc=p<40?'low':p<70?'mid':'high';
-        return`<div class="breakdown-item"><div class="b-icon">${icons[x.k]}</div><div class="b-info"><div class="b-name">${x.l}</div><div class="b-detail">${x.d}</div><div class="bar-wrap"><div class="bar-fill ${fc}" style="width:${p}%"></div></div></div><div class="b-score">${x.s}<span class="b-max">/${x.m}</span></div></div>`}).join('');
-
-      if(bankrupt) document.getElementById('bdContainer').innerHTML+='<div style="background:#7f1d1d;color:#fca5a5;padding:16px;border-radius:10px;text-align:center;margin-top:12px;font-weight:700">⚠️ Bankruptcy — not eligible</div>';
-    } catch(e) {
-      toast('❌ '+e.message,true);
-    }
-    btn.disabled=false; btn.textContent='Calculate My Score';
-  }
-
-  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
-</script>
-</body>
-</html>
+1|<!DOCTYPE html>
+2|<html lang="en">
+3|<head>
+4|  <meta charset="UTF-8" />
+5|  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+6|  <title>Golden Harbor — Loan Score</title>
+7|  <meta name="theme-color" content="#0f172a" />
+8|  <link rel="manifest" href="manifest.json" />
+9|  <link rel="apple-touch-icon" href="icon-192.png" />
+10|  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+11|  <style>
+12|    *{margin:0;padding:0;box-sizing:border-box}
+13|    body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;min-height:100dvh;display:flex;justify-content:center;-webkit-tap-highlight-color:transparent}
+14|    .app{width:100%;max-width:480px;display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
+15|    .topbar{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #1e293b}
+16|    .topbar .logo{font-weight:800;font-size:16px;color:#e2b54b}
+17|    .page{display:none;flex:1;padding:20px;overflow-y:auto}
+18|    .page.active{display:block}
+19|    .back-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+20|    .back-btn{background:none;border:none;color:#e2b54b;font-size:22px;cursor:pointer;padding:0 4px;line-height:1}
+21|    .type-cards{display:grid;gap:12px;margin-bottom:20px}
+22|    .type-card{background:#1e293b;border:2px solid #334155;border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all .2s}
+23|    .type-card.selected{border-color:#e2b54b;background:#1a2744}
+24|    .type-card .t-icon{font-size:36px;margin-bottom:8px}
+25|    .type-card .t-name{font-weight:700;font-size:16px}
+26|    .type-card .t-desc{font-size:12px;color:#94a3b8;margin-top:4px}
+27|    .upload-box{background:#1e293b;border:2px dashed #334155;border-radius:14px;padding:24px;text-align:center;cursor:pointer;margin-bottom:12px;position:relative}
+28|    .upload-box.uploaded{border-color:#22c55e;border-style:solid}
+29|    .upload-box .u-icon{font-size:32px;margin-bottom:8px}
+30|    .upload-box .u-label{font-weight:600;font-size:14px}
+31|    .upload-box .u-hint{font-size:11px;color:#64748b;margin-top:4px}
+32|    .upload-box .u-file{font-size:12px;color:#22c55e;margin-top:4px}
+33|    .upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+34|    .form-group{margin-bottom:14px}
+35|    .form-group label{display:block;font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:4px;text-transform:uppercase}
+36|    .form-group input,.form-group select{width:100%;padding:14px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#e2e8f0;font-size:15px;font-family:'Inter',sans-serif;outline:none}
+37|    .form-group input:focus,.form-group select:focus{border-color:#e2b54b}
+38|    .form-group select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+39|    .btn{display:inline-block;padding:14px 28px;border-radius:12px;font-weight:700;font-size:14px;text-decoration:none;cursor:pointer;border:none;font-family:'Inter',sans-serif;text-align:center}
+40|    .btn-gold{background:linear-gradient(135deg,#e2b54b,#c9952e);color:#0f172a}.btn-gold:disabled{opacity:.5}
+41|    .btn-full{width:100%;padding:16px}
+42|    .btn-outline{background:transparent;color:#e2b54b;border:1px solid #334155}
+43|    .score-circle{width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;margin:20px auto;border:4px solid #334155}
+44|    .score-circle .num{font-size:42px;font-weight:800}.score-circle .label{font-size:12px;color:#94a3b8}
+45|    .score-circle.red{border-color:#dc2626}.score-circle.orange{border-color:#f97316}.score-circle.yellow{border-color:#eab308}.score-circle.green{border-color:#22c55e}
+46|    .rating-badge{display:inline-block;padding:6px 16px;border-radius:20px;font-weight:700;font-size:14px;text-align:center;margin:0 auto 20px}
+47|    .rating-badge.red{background:#7f1d1d;color:#fca5a5}.rating-badge.orange{background:#7c2d12;color:#fdba74}.rating-badge.yellow{background:#713f12;color:#fde047}.rating-badge.green{background:#14532d;color:#86efac}
+48|    .breakdown-item{display:flex;align-items:center;gap:12px;padding:14px;background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:8px}
+49|    .breakdown-item .b-icon{font-size:22px}.breakdown-item .b-info{flex:1}
+50|    .breakdown-item .b-name{font-size:13px;font-weight:600}.breakdown-item .b-detail{font-size:11px;color:#64748b}
+51|    .breakdown-item .b-score{font-weight:700;font-size:16px;text-align:right}.breakdown-item .b-max{font-size:11px;color:#64748b}
+52|    .bar-wrap{height:6px;background:#334155;border-radius:3px;margin-top:4px}
+53|    .bar-fill{height:100%;border-radius:3px;background:#e2b54b;transition:width .5s}
+54|    .bar-fill.low{background:#dc2626}.bar-fill.mid{background:#eab308}.bar-fill.high{background:#22c55e}
+55|    .bottom-nav{display:flex;background:#1e293b;border-top:1px solid #334155;position:sticky;bottom:0}
+56|    .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px;color:#64748b;font-size:11px;cursor:pointer;gap:3px;border:none;background:none;font-family:'Inter',sans-serif}
+57|    .nav-item.active{color:#e2b54b}.nav-item .nav-icon{font-size:19px}
+58|    .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#22c55e;color:#fff;padding:12px 24px;border-radius:12px;font-weight:600;z-index:999;opacity:0;pointer-events:none;transition:opacity .3s}
+59|    .toast.show{opacity:1}.toast.error{background:#dc2626}
+60|    .spinner{display:inline-block;width:20px;height:20px;border:2px solid #0f172a;border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:8px}
+61|    @keyframes spin{to{transform:rotate(360deg)}}
+62|    .disclaimer{font-size:11px;color:#64748b;text-align:center;margin-top:12px}
+63|    @media(min-width:481px){.app{border-left:1px solid #1e293b;border-right:1px solid #1e293b}}
+64|  </style>
+65|</head>
+66|<body>
+67|<div class="app">
+68|  <div class="topbar"><div class="logo">⚓ Golden Harbor<span style="color:#94a3b8;font-weight:400;font-size:12px;margin-left:6px">Loan Score</span></div></div>
+69|
+70|  <!-- Score Tab -->
+71|  <div class="page active" id="page-score">
+72|    <div id="stepType">
+73|      <p style="font-size:13px;color:#94a3b8;margin-bottom:12px">What type of loan?</p>
+74|      <div class="type-cards">
+75|        <div class="type-card" onclick="selectType('Personal Loan',this)"><div class="t-icon">👤</div><div class="t-name">Personal Loan</div><div class="t-desc">For salaried individuals</div></div>
+76|        <div class="type-card" onclick="selectType('SME Business Loan',this)"><div class="t-icon">🏢</div><div class="t-name">SME / Business Loan</div><div class="t-desc">For business owners</div></div>
+77|        <div class="type-card" onclick="selectType('Housing Loan',this)"><div class="t-icon">🏠</div><div class="t-name">Housing Loan</div><div class="t-desc">For home buyers</div></div>
+78|      </div>
+79|    </div>
+80|
+81|    <div id="stepUpload" style="display:none">
+82|      <div class="back-bar"><button class="back-btn" onclick="backToType()">←</button><span style="font-weight:700" id="selLabel">Personal Loan</span></div>
+83|      <p style="font-size:12px;color:#94a3b8;margin-bottom:16px">Upload 3 PDFs — payslip, bank statement, CTOS report</p>
+84|      <div class="upload-box" id="boxPayslip"><div class="u-icon">💰</div><div class="u-label">Payslip</div><div class="u-hint">Latest month (PDF)</div><div class="u-file"></div><input type="file" accept=".pdf" onchange="fileReady(this,'payslip','boxPayslip')"></div>
+85|      <div class="upload-box" id="boxBank"><div class="u-icon">🏦</div><div class="u-label">Bank Statement</div><div class="u-hint">Latest 1-3 months (PDF)</div><div class="u-file"></div><input type="file" accept=".pdf" onchange="fileReady(this,'bank','boxBank')"></div>
+86|      <div class="upload-box" id="boxCTOS"><div class="u-icon">📊</div><div class="u-label">CTOS / CCRIS Report</div><div class="u-hint">Latest report (PDF)</div><div class="u-file"></div><input type="file" accept=".pdf" onchange="fileReady(this,'ctos','boxCTOS')"></div>
+87|      <div class="form-group"><label>Employment Type</label><select id="empType"><option value="salaried">Salaried</option><option value="government">Government / GLC</option><option value="self-employed">Self-Employed</option></select></div>
+88|      <div class="form-group"><label>Years at Current Job</label><input type="number" id="empYears" placeholder="e.g. 3.5" min="0" max="50" step="0.5" inputmode="decimal" onkeydown="if(event.key==='e'||event.key==='E')event.preventDefault()"></div>
+89|      <button class="btn btn-gold btn-full" id="calcBtn" onclick="calculate()">Calculate My Score</button>
+90|      <p class="disclaimer">Analysis by AI. This is an estimate, not a guarantee.</p>
+91|    </div>
+92|
+93|    <div id="stepResult" style="display:none">
+94|      <div class="back-bar"><button class="back-btn" onclick="backToUpload()">←</button><span style="font-weight:700">Your Score</span></div>
+95|      <div class="score-circle" id="scoreCircle"><div class="num" id="scoreNum">--</div><div class="label">out of 100</div></div>
+96|      <div style="text-align:center"><span class="rating-badge" id="ratingBadge">--</span></div>
+97|      <div style="margin-bottom:8px;font-size:13px;font-weight:600">Breakdown</div>
+98|      <div id="bdContainer"></div>
+99|      <div style="margin-top:20px;text-align:center"><p style="font-size:14px;color:#cbd5e1;margin-bottom:12px">Want us to help improve your score?</p><a href="https://wa.me/60146326569" class="btn btn-gold btn-full">📱 WhatsApp Us</a></div>
+100|      <button class="btn btn-outline btn-full" style="margin-top:10px" onclick="backToType()">Try Another Loan Type</button>
+101|    </div>
+102|  </div>
+103|
+104|  <!-- Docs Tab -->
+105|  <div class="page" id="page-docs">
+106|    <div class="back-bar"><button class="back-btn" onclick="switchTab('score')">←</button><h2 style="font-size:18px;margin:0">Documents</h2></div>
+107|    <p style="font-size:12px;color:#94a3b8;margin-bottom:16px">Checklist for your application</p>
+108|    <div style="font-size:12px;font-weight:600;color:#64748b;margin:12px 0 8px">Personal Loan</div>
+109|    <div style="padding:12px;background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:6px;font-size:13px">🪪 IC (front & back)</div>
+110|    <div style="padding:12px;background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:6px;font-size:13px">💰 Payslip (3 months)</div>
+111|    <div style="padding:12px;background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:6px;font-size:13px">🏦 Bank Statement (6 months)</div>
+112|    <div style="padding:12px;background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:6px;font-size:13px">📈 EPF Statement</div>
+113|    <div style="padding:12px;background:#1e293b;border:1px solid #334155;border-radius:10px;margin-bottom:6px;font-size:13px">📊 CTOS / CCRIS Report</div>
+114|  </div>
+115|
+116|  <!-- Contact Tab -->
+117|  <div class="page" id="page-contact">
+118|    <div class="back-bar"><button class="back-btn" onclick="switchTab('score')">←</button><h2 style="font-size:18px;margin:0">Contact</h2></div>
+119|    <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:16px;margin-bottom:12px"><h4 style="margin-bottom:4px">📱 WhatsApp</h4><p style="font-size:13px;color:#94a3b8">+60 14-632 6569</p><a href="https://wa.me/60146326569" class="btn btn-gold" style="display:inline-block;margin-top:8px;padding:10px 20px;font-size:13px">Chat Now →</a></div>
+120|    <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:16px;margin-bottom:12px"><h4 style="margin-bottom:4px">✉️ Email</h4><p style="font-size:13px;color:#94a3b8">marcus.lim.ghb@gmail.com</p></div>
+121|  </div>
+122|
+123|  <div class="bottom-nav">
+124|    <button class="nav-item active" data-page="score" onclick="switchTab('score')"><span class="nav-icon">📊</span>Score</button>
+125|    <button class="nav-item" data-page="docs" onclick="switchTab('docs')"><span class="nav-icon">📄</span>Docs</button>
+126|    <button class="nav-item" data-page="contact" onclick="switchTab('contact')"><span class="nav-icon">📞</span>Contact</button>
+127|  </div>
+128|</div>
+129|<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+130|<div class="toast" id="toast"></div>
+131|<script>
+132|pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+133|  const DS_KEY = 'sk-9fc...8afe';
+134|
+135|
+136|  let files = {}, loanType = '';
+137|
+138|  function switchTab(t){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+t).classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.querySelector('.nav-item[data-page="'+t+'"]').classList.add('active')}
+139|  function selectType(t,el){loanType=t;document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');document.getElementById('selLabel').textContent=t;document.getElementById('stepType').style.display='none';document.getElementById('stepUpload').style.display='block';document.getElementById('stepResult').style.display='none'}
+140|  function backToType(){document.getElementById('stepType').style.display='block';document.getElementById('stepUpload').style.display='none';document.getElementById('stepResult').style.display='none'}
+141|  function backToUpload(){document.getElementById('stepUpload').style.display='block';document.getElementById('stepResult').style.display='none'}
+142|  function fileReady(i,k,b){if(i.files[0]){files[k]=i.files[0];document.getElementById(b).classList.add('uploaded');document.getElementById(b).querySelector('.u-file').textContent=i.files[0].name}}
+143|  function toast(m,e){const t=document.getElementById('toast');t.textContent=m;t.className='toast'+(e?' error':'')+' show';setTimeout(()=>t.classList.remove('show'),3500)}
+144|
+145|  async function extractPDFText(file) {
+146|    const data = await file.arrayBuffer();
+147|    const pdf = await pdfjsLib.getDocument({data}).promise;
+148|    let text = '';
+149|    for (let i = 1; i <= pdf.numPages; i++) {
+150|      const page = await pdf.getPage(i);
+151|      const content = await page.getTextContent();
+152|      text += content.items.map(item => item.str).join(' ') + '\n';
+153|    }
+154|    return text.trim() || 'No text found in PDF';
+155|  }
+156|
+157|  async function callDS(system, userText) {
+158|    const resp = await fetch(DS_URL, {
+159|      method: 'POST',
+160|      headers: {'Content-Type':'application/json','Authorization':'Bearer '+DS_KEY},
+161|      body: JSON.stringify({model:'deepseek-v4-flash',messages:[{role:'system',content:system},{role:'user',content:userText.slice(0,8000)}],temperature:0,max_tokens:300,thinking:{type:'disabled'}})
+162|    });
+163|    const data = await resp.json();
+164|    if (!resp.ok) throw new Error(data.error?.message || 'API error');
+165|    return data.choices[0].message.content.trim();
+166|  }
+167|
+168|  async function calculate() {
+169|    if (!files.payslip||!files.bank||!files.ctos) return toast('Upload all 3 PDFs',true);
+170|    const btn = document.getElementById('calcBtn');
+171|    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Reading PDFs...';
+172|
+173|    try {
+174|      // Extract text
+175|      const pt = await extractPDFText(files.payslip);
+176|      const bt = await extractPDFText(files.bank);
+177|      const ct = await extractPDFText(files.ctos);
+178|      if (!pt&&!bt&&!ct) throw new Error('Could not read PDFs. Use digital PDFs, not scanned images.');
+179|
+180|      btn.innerHTML = '<span class="spinner"></span> Analyzing...';
+181|
+182|      // Call DeepSeek for each doc in parallel
+183|      const [pr, br, cr] = await Promise.all([
+184|        callDS('Extract from payslip: net monthly salary (RM) and employer name. Return ONLY JSON: {"income":number,"employer":"name"}', pt),
+185|        callDS('Sum monthly loan commitments (hire purchase, housing, personal, PTPTN). For credit cards use 5% minimum payment. Ignore groceries, fuel, utilities, ATM, insurance, transfers, shopping, food. Return ONLY JSON: {"commitments":number}', bt),
+186|        callDS('Analyze CTOS/CCRIS: bankrupt? defaults? late payment count? recent applications? Return ONLY JSON: {"bankrupt":bool,"defaults":bool,"late_count":number,"recent_apps":number}', ct)
+187|      ]);
+188|
+189|      const pi = JSON.parse((pr.match(/\{[\s\S]*\}/)||[pr])[0]);
+190|      const bi = JSON.parse((br.match(/\{[\s\S]*\}/)||[br])[0]);
+191|      const ci = JSON.parse((cr.match(/\{[\s\S]*\}/)||[cr])[0]);
+192|
+193|      const income = parseFloat(pi.income)||0;
+194|      const employer = pi.employer||'';
+195|      const commits = parseFloat(bi.commitments)||0;
+196|
+197|      // Validate extracted data
+198|      const warnings = [];
+199|      if (income < 500) warnings.push('Could not find income in payslip');
+200|      if (commits < 50) warnings.push('Could not find loan payments in bank statement');
+201|      if (!pt || pt.length < 20) warnings.push('Payslip PDF appears empty');
+202|      if (!bt || bt.length < 20) warnings.push('Bank statement PDF appears empty');
+203|      if (!ct || ct.length < 20) warnings.push('CTOS PDF appears empty');
+204|      // Income found but no commitments = likely swapped files
+205|      if (income > 500 && commits < 50) warnings.push('Bank statement shows no loan payments. Check file is correct.');
+206|      if (warnings.length >= 2 || (income > 500 && commits < 50)) throw new Error('Unable to calculate score:\\n' + warnings.join('\\n'));
+207|      const bankrupt = ci.bankrupt||false;
+208|      const defaults = ci.defaults||false;
+209|      const late = parseInt(ci.late_count)||0;
+210|      const apps = parseInt(ci.recent_apps)||0;
+211|
+212|      // Score
+213|      let crScore = bankrupt?0: defaults?0: late>=3||apps>=5?8: late>=1?20: 35;
+214|      const dsr = income>0?(commits/income)*100:100;
+215|      const dsrScore = dsr<=50?40:dsr<=60?30:dsr<=70?12:0;
+216|      const yrs = Math.max(0, Math.min(50, parseFloat(document.getElementById('empYears').value)||0));
+217|      const et = document.getElementById('empType').value;
+218|      const empScore = et==='government'?(yrs>=5?15:12):et==='salaried'?(yrs>=2?12:8):yrs>=2?6:3;
+219|      const incScore = income>=5000?10:income>=3000?7:3;
+220|      const total = bankrupt?0: Math.max(0,Math.min(100,dsrScore+crScore+empScore+incScore));
+221|
+222|      const color = bankrupt?'red':total<=35?'red':total<=55?'orange':total<=70?'yellow':'green';
+223|      const rating = bankrupt?'Not Eligible':total<=35?'Poor':total<=55?'Weak':total<=70?'Fair':total<=85?'Good':'Strong';
+224|
+225|      document.getElementById('stepUpload').style.display='none';
+226|      document.getElementById('stepResult').style.display='block';
+227|      document.getElementById('scoreCircle').className='score-circle '+color;
+228|      document.getElementById('scoreNum').textContent=total;
+229|      document.getElementById('ratingBadge').textContent=rating;
+230|      document.getElementById('ratingBadge').className='rating-badge '+color;
+231|
+232|      const icons={dsr:'📉',credit:'📊',employment:'💼',income:'💰'};
+233|      document.getElementById('bdContainer').innerHTML = [
+234|        {k:'dsr',l:'Debt Service Ratio',s:dsrScore,m:40,v:dsr,d:dsr.toFixed(1)+'%'},
+235|        {k:'credit',l:'Credit Record',s:crScore,m:35,d:'Late:'+late+' Defaults:'+defaults},
+236|        {k:'employment',l:'Employment',s:empScore,m:15,d:et+' '+yrs+'yr '+employer},
+237|        {k:'income',l:'Income Level',s:incScore,m:10,v:income,d:'RM '+income.toLocaleString()}
+238|      ].map(x=>{const p=x.s/x.m*100;const fc=p<40?'low':p<70?'mid':'high';
+239|        return`<div class="breakdown-item"><div class="b-icon">${icons[x.k]}</div><div class="b-info"><div class="b-name">${x.l}</div><div class="b-detail">${x.d}</div><div class="bar-wrap"><div class="bar-fill ${fc}" style="width:${p}%"></div></div></div><div class="b-score">${x.s}<span class="b-max">/${x.m}</span></div></div>`}).join('');
+240|
+241|      if(bankrupt) document.getElementById('bdContainer').innerHTML+='<div style="background:#7f1d1d;color:#fca5a5;padding:16px;border-radius:10px;text-align:center;margin-top:12px;font-weight:700">⚠️ Bankruptcy — not eligible</div>';
+242|    } catch(e) {
+243|      toast('❌ '+e.message,true);
+244|    }
+245|    btn.disabled=false; btn.textContent='Calculate My Score';
+246|  }
+247|
+248|  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+249|</script>
+250|</body>
+251|</html>
+252|
