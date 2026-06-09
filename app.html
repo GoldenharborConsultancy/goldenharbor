@@ -179,7 +179,7 @@
     const resp = await fetch(DS_URL, {
       method: 'POST',
       headers: {'Content-Type':'application/json','Authorization':'Bearer '+getDSKey()},
-      body: JSON.stringify({model:'deepseek-v4-flash',messages:[{role:'system',content:system},{role:'user',content:userText.slice(0,8000)}],temperature:0,max_tokens:300})
+      body: JSON.stringify({model:'deepseek-v4-flash',messages:[{role:'system',content:system},{role:'user',content:userText.slice(0,8000)}],temperature:0,max_tokens:300,thinking:{type:'disabled'}})
     });
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error?.message || 'API error');
@@ -203,7 +203,7 @@
       // Call DeepSeek for each doc in parallel
       const [pr, br, cr] = await Promise.all([
         callDS('Extract from payslip: net monthly salary (RM) and employer name. Return ONLY JSON: {"income":number,"employer":"name"}', pt),
-        callDS('Extract total MONTHLY loan/credit commitments (car,house,credit card,PTPTN,etc). Return ONLY JSON: {"commitments":number}', bt),
+        callDS('Sum monthly loan commitments (hire purchase, housing, personal, PTPTN). For credit cards use 5% minimum payment. Ignore groceries, fuel, utilities, ATM, insurance, transfers, shopping, food. Return ONLY JSON: {"commitments":number}', bt),
         callDS('Analyze CTOS/CCRIS: bankrupt? defaults? late payment count? recent applications? Return ONLY JSON: {"bankrupt":bool,"defaults":bool,"late_count":number,"recent_apps":number}', ct)
       ]);
 
