@@ -243,8 +243,8 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
             if (ctdi.date) {
               const parts = ctdi.date.split('/');
               const ctD = new Date(parts.length===3 ? parseInt('20'+parts[2]) : parseInt(parts[1]), parseInt(parts[1])-1, parts.length===3 ? parseInt(parts[0]) : 1);
-              const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth()-1);
-              if (ctD < cutoff) throw new Error('CTOS report too old: '+ctdi.date+'. Must be latest month.');
+              const cutoff = new Date(); cutoff.setDate(1); cutoff.setHours(0,0,0,0);
+              if (ctD < cutoff) throw new Error('CTOS report too old: '+ctdi.date+'. Must be current month.');
             }
           }
           // Verify names match between payslip and CTOS
