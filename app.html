@@ -216,6 +216,17 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
         var income = parseFloat(pi.income)||0;
         var employer = pi.employer||'';
         var commits = parseFloat(bi.commitments)||0;
+        // LIVE check: bank statement must be recent
+        if (window.location.hostname==='goldenharborconsultancy.github.io') {
+          const bd = await callDS('Extract the latest transaction date (DD/MM/YY). Return ONLY JSON: {"date":"DD/MM/YY"}', bt.slice(0,500));
+          const bdi = JSON.parse((bd.match(/\{[\s\S]*\}/)||[bd])[0]);
+          if (bdi.date) {
+            const [dd,mm,yy] = bdi.date.split('/').map(Number);
+            const bankDate = new Date(2000+yy, mm-1, dd);
+            const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth()-1);
+            if (bankDate < cutoff) throw new Error('Bank statement too old: '+bdi.date+'. Must be latest month.');
+          }
+        }
       }
       // CTOS: optional
       let ci = {bankrupt:false,defaults:false,late_count:0,recent_apps:0};
