@@ -184,8 +184,8 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
           if (periodEnd) {
             const [d,m,y] = periodEnd[1].split('/').map(Number);
             const endDate = new Date(2000+y, m-1, d);
-            const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth()-3);
-            if (endDate < cutoff) throw new Error('Bank statement too old. Latest entry: '+periodEnd[1]+'. Must be within last 3 months.');
+            const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth()-1);
+            if (endDate < cutoff) throw new Error('Bank statement too old. Latest entry: '+periodEnd[1]+'. Must be latest month.');
           }
         }
         pi.name = bi.name||''; pi.income = parseFloat(bi.income)||0;
@@ -201,8 +201,8 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
           if (pdi.period) {
             const [pm, py] = pdi.period.split('/').map(Number);
             const payslipDate = new Date(py, pm-1, 1);
-            const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth()-3);
-            if (payslipDate < cutoff) throw new Error('Payslip too old: '+pdi.period+'. Must be within last 3 months.');
+            const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth()-1);
+            if (payslipDate < cutoff) throw new Error('Payslip too old: '+pdi.period+'. Must be latest month.');
           }
         }
         if (pt_text.length < 50) throw new Error('Payslip appears empty or unreadable');
