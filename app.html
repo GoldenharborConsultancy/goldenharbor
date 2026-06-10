@@ -171,18 +171,10 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
       btn.innerHTML = '<span class="spinner"></span> Verifying...';
       const [pr, br] = await Promise.all([
         callDS('Extract: full name, net monthly salary (RM), employer name. Return ONLY JSON: {"name":"FULL NAME","income":number,"employer":"name"}', pt),
-        callDS('Extract: account holder full name, total monthly loan commitments (all loans: housing, car, personal, PTPTN). For credit cards use 5% of outstanding. Ignore: groceries, fuel, dining, utilities, ATM, insurance, transfers, shopping, WiFi, telco, entertainment, food delivery. Return ONLY JSON: {"name":"FULL NAME","commitments":number}', bt)
+        callDS('Extract: total monthly loan commitments (all loans: housing, car, personal, PTPTN). For credit cards use 5% of outstanding. Ignore: groceries, fuel, dining, utilities, ATM, insurance, transfers, shopping, WiFi, telco, entertainment, food delivery. Return ONLY JSON: {"commitments":number}', bt)
       ]);
       const pi = JSON.parse((pr.match(/\{[\s\S]*\}/)||[pr])[0]);
       const bi = JSON.parse((br.match(/\{[\s\S]*\}/)||[br])[0]);
-      // Name verification
-      const clean = n => (n||'').toUpperCase().replace(/[^A-Z ]/g,'').trim();
-      const pn = clean(pi.name), bn = clean(bi.name);
-      if (pn && bn && pn !== bn) {
-        const shares = (a,b) => {const wa=a.split(' ').filter(w=>w.length>1), wb=b.split(' '); return wa.filter(w=>wb.includes(w)).length >= Math.min(2,wa.length);};
-        if (!shares(pn,bn) && !shares(bn,pn))
-          throw new Error('Name mismatch. Payslip: '+pn+', Bank: '+bn+'. Check files.');
-      }
       const income = parseFloat(pi.income)||0;
       const employer = pi.employer||'';
       const commits = parseFloat(bi.commitments)||0;
@@ -192,8 +184,16 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
         btn.innerHTML = '<span class="spinner"></span> Credit report...';
         const ct = await extractPDFText(files.ctos);
         if (ct && ct.length > 20) {
-          const cr = await callDS('Analyze CTOS/CCRIS: bankrupt? defaults? late payment count? recent applications? Return ONLY JSON: {"bankrupt":bool,"defaults":bool,"late_count":number,"recent_apps":number}', ct);
+          const cr = await callDS('Extract: subject full name, bankruptcy, defaults, late payment count, recent credit applications. Return ONLY JSON: {"name":"FULL NAME","bankrupt":bool,"defaults":bool,"late_count":number,"recent_apps":number}', ct);
           ci = JSON.parse((cr.match(/\{[\s\S]*\}/)||[cr])[0]);
+          // Verify names match between payslip and CTOS
+          const clean = n => (n||'').toUpperCase().replace(/[^A-Z ]/g,'').trim();
+          const cn = clean(ci.name), pn = clean(pi.name);
+          if (cn && pn && cn !== pn) {
+            const shares = (a,b) => {const wa=a.split(' ').filter(w=>w.length>1), wb=b.split(' '); return wa.filter(w=>wb.includes(w)).length >= Math.min(2,wa.length);};
+            if (!shares(cn,pn) && !shares(pn,cn))
+              throw new Error('Name mismatch. Payslip: '+pn+', CTOS: '+cn+'. Check files.');
+          }
         }
       }
       btn.innerHTML = '<span class="spinner"></span> Calculating...';
