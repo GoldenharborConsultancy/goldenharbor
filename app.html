@@ -159,25 +159,40 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
   }
 
   async function calculate() {
-    if (!files.payslip||!files.bank) return toast('Upload payslip and bank statement',true);
+    const et = document.getElementById('empType').value;
+    const isSelf = et === 'self-employed';
+    if (!files.bank) return toast('Upload bank statement',true);
+    if (!isSelf && !files.payslip) return toast('Upload payslip',true);
     const btn = document.getElementById('calcBtn');
     btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Reading PDFs...';
     try {
-      const pt = await extractPDFText(files.payslip);
       const bt = await extractPDFText(files.bank);
-      if (!pt && !bt) throw new Error('Could not read PDFs. Use digital PDFs, not scanned images.');
-      if (pt.length < 50) throw new Error('Payslip appears empty or unreadable');
       if (bt.length < 100) throw new Error('Bank statement appears empty or unreadable');
-      btn.innerHTML = '<span class="spinner"></span> Verifying...';
-      const [pr, br] = await Promise.all([
-        callDS('Extract: full name, net monthly salary (RM), employer name. Return ONLY JSON: {"name":"FULL NAME","income":number,"employer":"name"}', pt),
-        callDS('Extract: total monthly loan commitments (all loans: housing, car, personal, PTPTN). For credit cards use 5% of outstanding. Ignore: groceries, fuel, dining, utilities, ATM, insurance, transfers, shopping, WiFi, telco, entertainment, food delivery. Return ONLY JSON: {"commitments":number}', bt)
-      ]);
-      const pi = JSON.parse((pr.match(/\{[\s\S]*\}/)||[pr])[0]);
-      const bi = JSON.parse((br.match(/\{[\s\S]*\}/)||[br])[0]);
-      const income = parseFloat(pi.income)||0;
-      const employer = pi.employer||'';
-      const commits = parseFloat(bi.commitments)||0;
+      let pt = '', pi = {name:'',income:0,employer:''};
+      if (isSelf) {
+        if (!files.ctos) return toast('Self-employed: upload CTOS report also',true);
+        // No payslip — extract income + commitments + name from bank statement
+        btn.innerHTML = '<span class="spinner"></span> Analyzing bank statement...';
+        const br = await callDS('Extract: account holder full name, average monthly income (salary/transfers in), and total monthly loan commitments. Credit cards use 5% of outstanding. Ignore: groceries, fuel, dining, utilities, ATM, insurance, shopping, WiFi, telco, entertainment, food delivery. Return ONLY JSON: {"name":"FULL NAME","income":number,"commitments":number}', bt);
+        const bi = JSON.parse((br.match(/\{[\s\S]*\}/)||[br])[0]);
+        pi.name = bi.name||''; pi.income = parseFloat(bi.income)||0;
+        var income = parseFloat(bi.income)||0;
+        var commits = parseFloat(bi.commitments)||0;
+        var employer = '';
+      } else {
+        const pt_text = await extractPDFText(files.payslip);
+        if (pt_text.length < 50) throw new Error('Payslip appears empty or unreadable');
+        btn.innerHTML = '<span class="spinner"></span> Verifying...';
+        const [pr, br] = await Promise.all([
+          callDS('Extract: full name, net monthly salary (RM), employer name. Return ONLY JSON: {"name":"FULL NAME","income":number,"employer":"name"}', pt_text),
+          callDS('Extract: total monthly loan commitments. Credit cards use 5% of outstanding. Ignore: groceries, fuel, dining, utilities, ATM, insurance, transfers, shopping, WiFi, telco, entertainment, food delivery. Return ONLY JSON: {"commitments":number}', bt)
+        ]);
+        pi = JSON.parse((pr.match(/\{[\s\S]*\}/)||[pr])[0]);
+        const bi = JSON.parse((br.match(/\{[\s\S]*\}/)||[br])[0]);
+        var income = parseFloat(pi.income)||0;
+        var employer = pi.employer||'';
+        var commits = parseFloat(bi.commitments)||0;
+      }
       // CTOS: optional
       let ci = {bankrupt:false,defaults:false,late_count:0,recent_apps:0};
       if (files.ctos) {
