@@ -278,6 +278,43 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
         }
       }
       btn.innerHTML = '<span class="spinner"></span> Calculating...';
+      // === HOUSING LOAN ===
+      let housingMaxLoan = null;
+      if (loanType === 'Housing Loan' && isJoint) {
+        if (!files.payslip2||!files.bank2||!files.ctos2) throw new Error('Co-applicant: upload all documents');
+        btn.innerHTML = '<span class="spinner"></span> Analyzing co-applicant...';
+        const [pt2, bt2, ct2] = await Promise.all([extractPDFText(files.payslip2), extractPDFText(files.bank2), extractPDFText(files.ctos2)]);
+        const [pr2, br2, cr2] = await Promise.all([
+          callDS('Extract: full name, net monthly salary. Return ONLY JSON: {"name":"FULL NAME","income":number}', pt2),
+          callDS('Extract: total monthly loan commitments. Credit cards at 5%. Ignore: groceries, fuel, dining, utilities, ATM, insurance, transfers, shopping, WiFi, telco, entertainment. Return ONLY JSON: {"commitments":number}', bt2),
+          callDS('Extract: bankruptcy, defaults, late payment count, recent applications. Return ONLY JSON: {"bankrupt":bool,"defaults":bool,"late_count":number,"recent_apps":number}', ct2)
+        ]);
+        const pi2 = JSON.parse((pr2.match(/\{[\s\S]*\}/)||[pr2])[0]);
+        const bi2 = JSON.parse((br2.match(/\{[\s\S]*\}/)||[br2])[0]);
+        const ci2 = JSON.parse((cr2.match(/\{[\s\S]*\}/)||[cr2])[0]);
+        const coIncome = parseFloat(pi2.income)||0;
+        const coCommits = parseFloat(bi2.commitments)||0;
+        // Spouse: 100% both incomes combined
+        income += coIncome;
+        commits += coCommits;
+        // Track co-applicant credit for combined scoring
+        const late2 = parseInt(ci2.late_count)||0;
+        const apps2 = parseInt(ci2.recent_apps)||0;
+        window._jointLate = late2; window._jointApps = apps2;
+        window._jointBankrupt = ci2.bankrupt||false; window._jointDefaults = ci2.defaults||false;
+      }
+      if (loanType === 'Housing Loan') {
+        const yrsVal = Math.max(0, parseFloat(document.getElementById('empYears').value)||0);
+        const etVal = document.getElementById('empType').value;
+        let empMult = yrsVal<2?0.9: yrsVal<5?1.0: yrsVal<10?1.05: 1.10;
+        const adjIncome = income * empMult;
+        let dsrCap = adjIncome<3000?0.60: adjIncome<5000?0.65: adjIncome<10000?0.70: 0.75;
+        if (etVal==='self-employed') dsrCap = Math.max(0.50, dsrCap - 0.10);
+        const maxMonthly = Math.max(0, (adjIncome * dsrCap) - commits);
+        const r = 0.045/12, n = 420;
+        const factor = (Math.pow(1+r, n) - 1) / (r * Math.pow(1+r, n));
+        housingMaxLoan = Math.round(maxMonthly * factor);
+      }
       const bankrupt = ci.bankrupt||false;
       const defaults = ci.defaults||false;
       const late = parseInt(ci.late_count)||0;
@@ -306,6 +343,13 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
         {k:'income',l:'Income Level',s:incScore,m:10,v:income,d:'RM '+income.toLocaleString()}
       ].map(x=>{const p=x.s/x.m*100;const fc=p<40?'low':p<70?'mid':'high';
         return'<div class="breakdown-item"><div class="b-icon">'+icons[x.k]+'</div><div class="b-info"><div class="b-name">'+x.l+'</div><div class="b-detail">'+x.d+'</div><div class="bar-wrap"><div class="bar-fill '+fc+'" style="width:'+p+'%"></div></div></div><div class="b-score">'+x.s+'<span class="b-max">/'+x.m+'</span></div></div>'}).join('');
+      if (housingMaxLoan !== null && housingMaxLoan > 0 && !bankrupt) {
+        let loanMultiplier = total<=19?0.25: total<=39?0.45: total<=59?0.70: total<=79?0.85: 1.0;
+        housingMaxLoan = Math.round(housingMaxLoan * loanMultiplier);
+      }
+      if (housingMaxLoan !== null && housingMaxLoan > 0) {
+        document.getElementById('bdContainer').innerHTML += '<div style="background:#1a2744;border:2px solid #e2b54b;border-radius:12px;padding:20px;text-align:center;margin-top:16px"><div style="font-size:12px;color:#94a3b8;margin-bottom:4px">Estimated Max Loan</div><div style="font-size:32px;font-weight:800;color:#e2b54b">RM '+housingMaxLoan.toLocaleString()+'</div><div style="font-size:11px;color:#64748b;margin-top:4px">Based on 4.5%, 35 years</div></div>';
+      }
       if(bankrupt) document.getElementById('bdContainer').innerHTML+='<div style="background:#7f1d1d;color:#fca5a5;padding:16px;border-radius:10px;text-align:center;margin-top:12px;font-weight:700">Bankruptcy — not eligible</div>';
     } catch(e) {
       toast(e.message,true);
