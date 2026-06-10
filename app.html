@@ -80,7 +80,7 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
 <div class="back-bar"><button class="back-btn" onclick="backToType()">←</button><span style="font-weight:700" id="selLabel">Personal Loan</span></div>
 <p style="font-size:12px;color:#94a3b8;margin-bottom:16px">Upload 3 PDFs — payslip, bank statement, CTOS report</p>
 <div class="upload-box" id="boxPayslip"><div class="u-icon">💰</div><div class="u-label">Payslip</div><div class="u-hint">Latest month (PDF)</div><div class="u-file"></div><input type="file" accept=".pdf" onchange="fileReady(this,'payslip','boxPayslip')"></div>
-<div class="upload-box" id="boxBank"><div class="u-icon">🏦</div><div class="u-label">Bank Statement</div><div class="u-hint">Latest 1-3 months (PDF)</div><div class="u-file"></div><input type="file" accept=".pdf" onchange="fileReady(this,'bank','boxBank')"></div>
+<div class="upload-box" id="boxBank"><div class="u-icon">🏦</div><div class="u-label">Bank Statement</div><div class="u-hint" id="bankHint">6 months (PDF, can upload multiple)</div><div class="u-file" id="bankFiles"></div><input type="file" accept=".pdf" multiple onchange="fileReady(this,'bank','boxBank')" id="bankInput"></div>
 <div class="upload-box" id="boxCTOS"><div class="u-icon">📊</div><div class="u-label">CTOS / CCRIS Report</div><div class="u-hint">Latest report (PDF)</div><div class="u-file"></div><input type="file" accept=".pdf" onchange="fileReady(this,'ctos','boxCTOS')"></div>
 <div class="form-group"><label>Employment Type</label><select id="empType"><option value="salaried">Salaried</option><option value="government">Government / GLC</option><option value="self-employed">Self-Employed</option></select></div>
 <div class="form-group"><label>Years at Current Job</label><input type="number" id="empYears" placeholder="e.g. 3.5" min="0" max="50" step="0.5" inputmode="decimal" onkeydown="if(event.key==='e'||event.key==='E')event.preventDefault()"></div>
@@ -132,7 +132,7 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
   function selectType(t,el){loanType=t;document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');document.getElementById('selLabel').textContent=t;document.getElementById('stepType').style.display='none';document.getElementById('stepUpload').style.display='block';document.getElementById('stepResult').style.display='none'}
   function backToType(){document.getElementById('stepType').style.display='block';document.getElementById('stepUpload').style.display='none';document.getElementById('stepResult').style.display='none'}
   function backToUpload(){document.getElementById('stepUpload').style.display='block';document.getElementById('stepResult').style.display='none'}
-  function fileReady(i,k,b){if(i.files[0]){files[k]=i.files[0];document.getElementById(b).classList.add('uploaded');document.getElementById(b).querySelector('.u-file').textContent=i.files[0].name}}
+  function fileReady(i,k,b){if(k==='bank'&&i.files.length>1){files[k]=Array.from(i.files);document.getElementById(b).classList.add('uploaded');document.getElementById('bankFiles').textContent=i.files.length+' files selected'}else if(i.files[0]){files[k]=i.files[0];document.getElementById(b).classList.add('uploaded');document.getElementById(b).querySelector('.u-file').textContent=i.files[0].name}}
   function toast(m,e){const t=document.getElementById('toast');t.textContent=m;t.className='toast'+(e?' error':'')+' show';setTimeout(()=>t.classList.remove('show'),3500)}
 
   async function extractPDFText(file) {
@@ -166,7 +166,7 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
     const btn = document.getElementById('calcBtn');
     btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Reading PDFs...';
     try {
-      const bt = await extractPDFText(files.bank);
+      let bankFiles = Array.isArray(files.bank) ? files.bank : [files.bank]; let bt = ''; for (const bf of bankFiles) { bt += await extractPDFText(bf) + '\n---\n'; }
       if (bt.length < 100) throw new Error('Bank statement appears empty or unreadable');
       let pt = '', pi = {name:'',income:0,employer:''};
       if (isSelf) {
