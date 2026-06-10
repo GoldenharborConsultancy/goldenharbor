@@ -184,7 +184,7 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
           if (periodEnd) {
             const [d,m,y] = periodEnd[1].split('/').map(Number);
             const endDate = new Date(2000+y, m-1, d);
-            const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth()-1);
+            const cutoff = new Date(); cutoff.setDate(1); cutoff.setHours(0,0,0,0);
             if (endDate < cutoff) throw new Error('Bank statement too old. Latest entry: '+periodEnd[1]+'. Must be latest month.');
           }
         }
@@ -201,7 +201,7 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
           if (pdi.period) {
             const [pm, py] = pdi.period.split('/').map(Number);
             const payslipDate = new Date(py, pm-1, 1);
-            const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth()-1);
+            const cutoff = new Date(); cutoff.setDate(1); cutoff.setHours(0,0,0,0);
             if (payslipDate < cutoff) throw new Error('Payslip too old: '+pdi.period+'. Must be latest month.');
           }
         }
@@ -223,7 +223,7 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
           if (bdi.date) {
             const [dd,mm,yy] = bdi.date.split('/').map(Number);
             const bankDate = new Date(2000+yy, mm-1, dd);
-            const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth()-1);
+            const cutoff = new Date(); cutoff.setDate(1); cutoff.setHours(0,0,0,0);
             if (bankDate < cutoff) throw new Error('Bank statement too old: '+bdi.date+'. Must be latest month.');
           }
         }
