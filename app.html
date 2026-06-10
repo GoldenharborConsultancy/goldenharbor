@@ -178,12 +178,33 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
         const bi = JSON.parse((br.match(/\{[\s\S]*\}/)||[br])[0]);
         const months = parseInt(bi.months)||0;
         if (months < 6) throw new Error('Self-employed requires 6+ months of bank statements. This covers only '+months+' month(s) ('+(bi.period||'unknown period')+'). Please upload a 6-month statement.');
+        // LIVE check: bank statement must end within last 3 months
+        if (window.location.hostname==='goldenharborconsultancy.github.io') {
+          const periodEnd = (bi.period||'').match(/(\d{2}\/\d{2}\/\d{2})$/);
+          if (periodEnd) {
+            const [d,m,y] = periodEnd[1].split('/').map(Number);
+            const endDate = new Date(2000+y, m-1, d);
+            const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth()-3);
+            if (endDate < cutoff) throw new Error('Bank statement too old. Latest entry: '+periodEnd[1]+'. Must be within last 3 months.');
+          }
+        }
         pi.name = bi.name||''; pi.income = parseFloat(bi.income)||0;
         var income = parseFloat(bi.income)||0;
         var commits = parseFloat(bi.commitments)||0;
         var employer = '';
       } else {
         const pt_text = await extractPDFText(files.payslip);
+        // LIVE check: payslip must be recent
+        if (window.location.hostname==='goldenharborconsultancy.github.io') {
+          const pd = await callDS('Extract the payslip period/date (month and year). Return ONLY JSON: {"period":"MM/YYYY"}', pt_text.slice(0,500));
+          const pdi = JSON.parse((pd.match(/\{[\s\S]*\}/)||[pd])[0]);
+          if (pdi.period) {
+            const [pm, py] = pdi.period.split('/').map(Number);
+            const payslipDate = new Date(py, pm-1, 1);
+            const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth()-3);
+            if (payslipDate < cutoff) throw new Error('Payslip too old: '+pdi.period+'. Must be within last 3 months.');
+          }
+        }
         if (pt_text.length < 50) throw new Error('Payslip appears empty or unreadable');
         btn.innerHTML = '<span class="spinner"></span> Verifying...';
         const [pr, br] = await Promise.all([
@@ -204,6 +225,17 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
         if (ct && ct.length > 20) {
           const cr = await callDS('Extract: subject full name, bankruptcy, defaults, late payment count, recent credit applications. Return ONLY JSON: {"name":"FULL NAME","bankrupt":bool,"defaults":bool,"late_count":number,"recent_apps":number}', ct);
           ci = JSON.parse((cr.match(/\{[\s\S]*\}/)||[cr])[0]);
+          // LIVE check: CTOS must be recent
+          if (window.location.hostname==='goldenharborconsultancy.github.io') {
+            const ctDate = await callDS('Extract the report date (DD/MM/YYYY or MM/YYYY). Return ONLY JSON: {"date":"DD/MM/YYYY"}', ct.slice(0,500));
+            const ctdi = JSON.parse((ctDate.match(/\{[\s\S]*\}/)||[ctDate])[0]);
+            if (ctdi.date) {
+              const parts = ctdi.date.split('/');
+              const ctD = new Date(parts.length===3 ? parseInt('20'+parts[2]) : parseInt(parts[1]), parseInt(parts[1])-1, parts.length===3 ? parseInt(parts[0]) : 1);
+              const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth()-6);
+              if (ctD < cutoff) throw new Error('CTOS report too old: '+ctdi.date+'. Must be within last 6 months.');
+            }
+          }
           // Verify names match between payslip and CTOS
           const clean = n => (n||'').toUpperCase().replace(/[^A-Z ]/g,'').trim();
           const cn = clean(ci.name), pn = clean(pi.name);
