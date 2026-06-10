@@ -173,7 +173,7 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
         if (!files.ctos) return toast('Self-employed: upload CTOS report also',true);
         // No payslip — extract income + commitments + name from bank statement
         btn.innerHTML = '<span class="spinner"></span> Analyzing bank statement...';
-        const br = await callDS('Extract: account holder full name, average monthly income (salary/transfers in), and total monthly loan commitments. Credit cards use 5% of outstanding. Ignore: groceries, fuel, dining, utilities, ATM, insurance, shopping, WiFi, telco, entertainment, food delivery. Return ONLY JSON: {"name":"FULL NAME","income":number,"commitments":number}', bt);
+        const br = await callDS('Extract from this bank statement: account holder full name, AVERAGE monthly income (sum all incoming credits/transfers, divide by number of months covered), and total monthly loan commitments. Credit cards use 5% of outstanding. Ignore: groceries, fuel, dining, utilities, ATM, insurance, shopping, WiFi, telco, entertainment, food delivery. Return ONLY JSON: {"name":"FULL NAME","income":number,"commitments":number}', bt);
         const bi = JSON.parse((br.match(/\{[\s\S]*\}/)||[br])[0]);
         pi.name = bi.name||''; pi.income = parseFloat(bi.income)||0;
         var income = parseFloat(bi.income)||0;
