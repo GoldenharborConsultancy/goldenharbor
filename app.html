@@ -173,8 +173,10 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;min-height:
         if (!files.ctos) return toast('Self-employed: upload CTOS report also',true);
         // No payslip — extract income + commitments + name from bank statement
         btn.innerHTML = '<span class="spinner"></span> Analyzing bank statement...';
-        const br = await callDS('Extract from this bank statement: account holder full name, AVERAGE monthly income (sum all incoming credits/transfers, divide by number of months covered), and total monthly loan commitments. Credit cards use 5% of outstanding. Ignore: groceries, fuel, dining, utilities, ATM, insurance, shopping, WiFi, telco, entertainment, food delivery. Return ONLY JSON: {"name":"FULL NAME","income":number,"commitments":number}', bt);
+        const br = await callDS('Analyze this bank statement for a self-employed applicant:\n1. Identify the statement period (start and end dates)\n2. Count the number of months covered\n3. Identify business income ONLY: recurring customer payments, business transfers, commissions. EXCLUDE: own-account transfers, personal loans/gifts, one-off large deposits (e.g. single RM20,000), gambling, insurance claims, internal transfers\n4. Calculate AVERAGE monthly income = total business income / months covered\n5. Total monthly loan commitments (credit cards at 5% of outstanding). Ignore: groceries, fuel, dining, utilities, ATM, insurance, shopping, WiFi, telco, entertainment\nReturn ONLY JSON: {"name":"FULL NAME","income":number,"commitments":number,"months":number,"period":"text"}', bt);
         const bi = JSON.parse((br.match(/\{[\s\S]*\}/)||[br])[0]);
+        const months = parseInt(bi.months)||0;
+        if (months < 6) throw new Error('Self-employed requires 6+ months of bank statements. This covers only '+months+' month(s) ('+(bi.period||'unknown period')+'). Please upload a 6-month statement.');
         pi.name = bi.name||''; pi.income = parseFloat(bi.income)||0;
         var income = parseFloat(bi.income)||0;
         var commits = parseFloat(bi.commitments)||0;
