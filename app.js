@@ -28,7 +28,7 @@ document.querySelectorAll('.faq-question').forEach(btn => {
 const form = document.getElementById('consultForm');
 const WHATSAPP_NUMBER = '60146326569';
 
-form.addEventListener('submit', (e) => {
+form?.addEventListener('submit', (e) => {
   e.preventDefault();
 
   const fields = form.querySelectorAll('input, select');
@@ -76,7 +76,7 @@ form.addEventListener('submit', (e) => {
   const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
   window.open(waUrl, '_blank');
 
-  showToast('Opening WhatsApp... Reply there and we\'ll help you right away.');
+  showToast('Opening WhatsApp... Continue your enquiry there.');
   form.reset();
 });
 
