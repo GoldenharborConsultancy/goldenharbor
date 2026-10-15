@@ -77,7 +77,6 @@ form?.addEventListener('submit', (e) => {
   window.open(waUrl, '_blank');
 
   showToast('Opening WhatsApp... Continue your enquiry there.');
-  form.reset();
 });
 
 // ─── Toast Notification ───
