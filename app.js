@@ -26,7 +26,7 @@ document.querySelectorAll('.faq-question').forEach(btn => {
 
 // ─── Form Submission — WhatsApp ───
 const form = document.getElementById('consultForm');
-const WHATSAPP_NUMBER = '60146326569';
+const WHATSAPP_NUMBER = '601143921533';
 
 form?.addEventListener('submit', (e) => {
   e.preventDefault();
@@ -64,7 +64,7 @@ form?.addEventListener('submit', (e) => {
   val.employment = selects[1] ? selects[1].value : '';
 
   // Build WhatsApp message
-  let msg = `Hi Marcus, I'd like a free consultation.`;
+  let msg = `Hi Golden Harbor, I'd like a free consultation.`;
   if (val.name) msg += `\n\nName: ${val.name}`;
   if (val.phone) msg += `\nPhone: ${val.phone}`;
   if (val.amount) msg += `\nLoan Amount: RM ${val.amount}`;
