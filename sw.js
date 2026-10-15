@@ -1,17 +1,8 @@
-const CACHE_NAME = 'goldenharbor-v1';
-const ASSETS = [
-  '/goldenharbor/app.html',
-  '/goldenharbor/manifest.json'
-];
-
-self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
-  );
+// Retire the former app worker without deleting browser storage.
+self.addEventListener('install', event => {
+  event.waitUntil(self.skipWaiting());
 });
 
-self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request))
-  );
+self.addEventListener('activate', event => {
+  event.waitUntil(self.clients.claim().then(() => self.registration.unregister()));
 });
